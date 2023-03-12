@@ -15,7 +15,7 @@ app.get('/products', async (req, res) => {
     const products = await manager.getProducts()
 
     // Puse para que en el caso de limit, dé los productos en orden. Podría elegir al azar, no sabía cual era la instrucción
-    res.send(limit? products.slice(0, limit) : products)
+    res.status(200).send(limit? products.slice(0, limit) : products)
 })
 
 app.get('/products/:pid', async (req, res) => {
@@ -23,7 +23,12 @@ app.get('/products/:pid', async (req, res) => {
 
     const product = await manager.getProductById(id)
 
-    res.send(product)
+    if (product.status == 'error') {
+        res.status(400).send( { code: 400, ...product } )
+    } else {
+        res.status(200).send(product)
+    }
+
 })
 
 app.listen(PORT, () => {
