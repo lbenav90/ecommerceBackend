@@ -1,0 +1,43 @@
+<div id="root">
+    <h1>Productos agregados:</h1>
+    <div id="products">
+        <ul>
+            {{#each products}}
+                {{#if status}}
+                <li id="{{code}}">
+                    {{ title }}
+                    <ul class="product-info" id="{{code}}">
+                        <li class="product-data description" id="{{code}}-description">{{ description }}</li>
+                        <li class="product-data price" id="{{code}}-price">${{ price }}</li>
+                        <li class="product-data stock" id="{{code}}-stock">{{ stock }}</li>
+                        <li class="product-data category" id="{{code}}-category">Category: {{ category }}</li>
+                    </ul>
+                </li>
+                <br>
+                {{/if}}
+            {{/each}}
+        </ul>
+    </div>
+    <h1>Productos discontinuados:</h1>
+    <div id="dis-products">
+        <ul>
+            {{#each products}}
+                {{#unless status}}
+                <li id="{{code}}">
+                    {{ title }}
+                    <ul class="product-info" id="dis-{{code}}">
+                        <li class="product-data description" id="dis-{{code}}-description">{{ description }}</li>
+                        <li class="product-data price" id="dis-{{code}}-price">${{ price }}</li>
+                        <li class="product-data stock" id="dis-{{code}}-stock">{{ stock }}</li>
+                        <li class="product-data category" id="dis-{{code}}-category">Category: {{ category }}</li>
+                    </ul>
+                </li>
+                <br>
+                {{/unless}}
+            {{/each}}
+        </ul>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="static/js/index.js"></script>

@@ -1,10 +1,10 @@
 import fs from 'fs';
-import { checkType } from '../../utils.js';
+import { checkType } from '../../../utils.js';
 
 export default class ProductManager {
     constructor(path) {
         if (!path) {
-            throw new Error('No path given');
+            throw new Error('A path to the products folder is needed to create a new ProductManager');
         }
 
         this.path = path;
