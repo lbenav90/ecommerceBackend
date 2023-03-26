@@ -31,7 +31,8 @@ const products = await manager.getProducts();
 
 app.get('/', (req, res) => {
     res.render('index', { 
-        products: products
+        products: products,
+        title: 'Products'
     })
 })
 
@@ -46,5 +47,5 @@ const socketServer = new Server(httpServer);
 socketServer.on('connection', socket => {
     console.log('New socket client connected');
 
-    // Acá adentro va el comportamiento del websocket
+    socket.emit('products', products);
 })

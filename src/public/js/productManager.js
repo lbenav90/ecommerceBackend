@@ -43,6 +43,13 @@ export default class ProductManager {
                     msg: `The product attribute '${key}' is not valid`
                 };
             }
+
+            if (product[key] == '') {
+                return {
+                    status: 'error', 
+                    msg: `The product attribute '${key}' cannot be empty`
+                };
+            }
             
             // Check that the attributes have the correct types
             check = checkType(product, key, this.productKeys);
@@ -211,7 +218,7 @@ export default class ProductManager {
         }
     }
     async deleteProduct(id) {
-        if (!id) {
+        if (!id && id != 0) {
             throw new Error('No Id Given');
         }
 

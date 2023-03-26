@@ -1,3 +1,48 @@
 <div class="real-time-products">
-    Hola
+    <h1>Productos:</h1>
+    <div class="products">
+
+    </div>
+    <form action="/api/products/" id="add-product-form">
+        <h3 id="form-header">Agregar producto:</h3>
+        <div class='form-div' id="form-title">
+            <label for="title" id="form-title-label">Título: </label>
+            <input type="text" name="title" id="form-title-input">
+        </div>
+        <div class='form-div' id="form-description">
+            <label for="description" id="form-description-label">Descripción: </label>
+            <input type="text" name="description" id="form-description-input">
+        </div>
+        <div class='form-div' id="form-price">
+            <label for="price" id="form-price-label">Precio: </label>
+            <input type="number" name="price" id="form-price-input">
+        </div>
+        <div class='form-div' id="form-thumbnail">
+            <label for="thumbnail" id="form-thumbnail-label">URL imágen: </label>
+            <input type="text" name="thumbnail" id="form-thumbnail-input">
+        </div>
+        <div class='form-div' id="form-stock">
+            <label for="stock" id="form-stock-label">Stock: </label>
+            <input type="number" name="stock" id="form-stock-input">
+        </div>
+        <div class='form-div' id="form-category">
+            <label for="category" id="form-category-label">Categoría: </label>
+            <input type="text" name="category" id="form-category-input">
+        </div>
+        <div class='form-div' id="form-code">
+            <label for="code" id="form-code-label">Código único: </label>
+            <input type="text" name="code" id="form-code-input">
+        </div>
+        <div class='form-div' id="form-status">
+            <label for="status" id="form-status-label">Activo? </label>
+            <input type="checkbox" name="status" id="form-status-input" checked>
+        </div>
+        <div id="alert-messages"></div>
+        <div class='form-div' id="form-submit">
+            <input type="submit" name="submit" id="form-submit-input" value="Agregar">
+        </div>
+    </form>
 </div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="static/js/realtime.js"></script>
+<link rel="stylesheet" href="static/css/styles.css">
