@@ -44,7 +44,7 @@ export default class ProductManager {
                 };
             }
 
-            if (product[key] == '') {
+            if (product[key] === '') {
                 return {
                     status: 'error', 
                     msg: `The product attribute '${key}' cannot be empty`
