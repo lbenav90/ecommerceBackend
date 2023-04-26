@@ -1,15 +1,17 @@
 import fs from 'fs';
-import { checkType } from '../../../utils.js';
+import __dirname, { checkType } from '../../../utils.js';
 
-export default class ProductManager {
-    constructor(path) {
-        if (!path) {
-            throw new Error('A path to the products folder is needed to create a new ProductManager');
-        }
+export default class ProductService {
+    #products;
+    #dirPath;
+    #filePath;
+    #fileSystem;
 
-        this.path = path;
-        // Creates folder path if is doesn't exist
-        fs.mkdirSync(path, { recursive: true })
+    constructor() {
+        this.#products = new Array();
+        this.#dirPath = __dirname + '/files/products';
+        this.#filePath = this.#dirPath + '/products.json';
+        this.#fileSystem = fs;
 
         this.productKeys = {
             'title': 'string', 
@@ -22,6 +24,27 @@ export default class ProductManager {
             'status': 'boolean'
         } // Attributes in products and corresponding types
     }
+
+    async #setDirectory() {
+        await this.#fileSystem.promises.mkdir(this.#dirPath, {recursive: true});
+        if (!this.#fileSystem.existsSync(this.#filePath)) {
+            await this.#fileSystem.promises.writeFile(this.#filePath, [])
+        }
+    }
+
+    async getProducts() {
+        try {
+            await this.#setDirectory();
+            const data = await this.#fileSystem.promises.readFile(this.#filePath, 'utf-8');
+            this.#products = JSON.parse(data);
+
+            return { status: 'success', data: this.#products };
+        } catch (error) {
+            console.error(`Error consultando los productos por archivo, valide el archivo: ${this.#dirPath}, detalle del error: ${error}`);
+            throw Error(`Error consultando los productos por archivo, valide el archivo: ${this.#dirPath}, detalle del error: ${error}`);
+        }
+    }
+
     async addProduct(product) {
         const productKeys = Object.keys(product).sort();
 
@@ -59,13 +82,13 @@ export default class ProductManager {
             }
         }
         
-        const products = await this.getProducts();
+        await this.getProducts();
         
         // If the file exists, check if the new product code is already assigned
-        if (products.length != 0) {
+        if (this.#products.length != 0) {
             const { code } = product;
 
-            const codes = products.map(product => product.code);
+            const codes = this.#products.map(product => product.code);
 
             if (codes.includes(code)) {
                 return {
@@ -76,41 +99,39 @@ export default class ProductManager {
         }
      
         // Get the maximum id value in the products. In case they are not sorted.
-        const max_id = products.length === 0? 0: products.sort((p1, p2) => p1.id > p2.id? -1: 1)[0].id;
+        const max_id = this.#products.length === 0? 0: this.#products.sort((p1, p2) => p1.id > p2.id? -1: 1)[0].id;
 
-        try { 
-            await fs.promises.writeFile(`${this.path}/products.json`, JSON.stringify([...products, { id: max_id + 1, ...product }]))
+        try {
+            await this.#fileSystem.promises.writeFile(this.#filePath, JSON.stringify(this.#products))
+            this.#products.push({ id: max_id + 1, ...product })
             return {
                 status: 'success',
                 msg: 'Product added successfully'
             }
-        } catch (err) {
+        } catch (error) {
             return {
                 status: 'error',
-                msg: `Something went wrong while adding the product: ${err}`
+                msg: `Something went wrong while adding the product: ${error}`
             }
         }
     }
-    async getProducts() {
-        const products = fs.existsSync(`${this.path}/products.json`)? await fs.promises.readFile(`${this.path}/products.json`, 'utf-8') : JSON.stringify([]);
-        return  JSON.parse(products);
-    }
+    
     async getProductById(id) {
         // Check if id is given
         if (!id && id != 0) {
             return { status: 'error', msg: "No id given"}
         }
 
-        const products = await this.getProducts();
+        await this.getProducts();
 
-        if (products.length === 0) {
+        if (this.#products.length === 0) {
             return { 
                 status: 'error', 
                 msg: 'No products added'
             };
         }
 
-        const selected = products.filter(product => product.id === id);
+        const selected = this.#products.filter(product => product.id === id);
 
         if (selected.length !== 0) {
             return {
@@ -161,9 +182,9 @@ export default class ProductManager {
             }
         }
 
-        const products = await this.getProducts();
+       await this.getProducts();
 
-        if (products.length === 0) {
+        if (this.#products.length === 0) {
             // Might be useless since the id check is gonna fail anyway
             return {
                 status: 'error',
@@ -171,11 +192,11 @@ export default class ProductManager {
             }
         }
 
-        const selected = products.filter(product => product.id === id);
+        const selected = this.#products.filter(product => product.id === id);
         let product;
         
         // Check if the id is a valid one
-        if (selected.length != 0) {
+        if (selected.length !== 0) {
             product = selected[0];
         } else {
             return {
@@ -183,37 +204,21 @@ export default class ProductManager {
                 msg: 'Id not found'
             }
         }
-        
-        // Keep the unchanged products
-        const untouchedProducts = products.filter((product) => product.id != id);
-
-        const newProduct = JSON.parse(JSON.stringify(product));
-
-        // Update the selected product with the update Object
-        updatedKeys.forEach((key) => {
-            if (Object.keys(this.productKeys).includes(key)) {
-                newProduct[key] = update[key];
-            } else {
-                return {
-                    status: 'error',
-                    msg: `The key ${key} is not present in the product`
-                }
-            }
-        })
-
-        // Recombine the products with the updated one
-        const newProducts = [...untouchedProducts, newProduct];
 
         try {
-            await fs.promises.writeFile(`${this.path}/products.json`, JSON.stringify(newProducts));
+            console.log(this.#products.filter(p => p.id !== id).push({...product, ...update}));
+            this.#products = this.#products.filter(p => p.id !== id)
+            this.#products.push({...product, ...update})
+
+            await fs.promises.writeFile(this.#filePath, JSON.stringify(this.#products));
             return {
                 status: 'success',
                 msg: 'Product updated successfully'
             }
-        } catch (err) {
+        } catch (error) {
             return {
                 status: 'error',
-                msg: `Something went wrong while saving the changes: ${err}`
+                msg: `Something went wrong while saving the changes: ${error}`
             }
         }
     }
@@ -222,11 +227,11 @@ export default class ProductManager {
             throw new Error('No Id Given');
         }
 
-        const products = await this.getProducts();
+        await this.getProducts();
 
-        const newProducts = products.filter((product) => product.id != id);
+        const newProducts = this.#products.filter((product) => product.id != id);
 
-        if (newProducts.length == products.length) {
+        if (newProducts.length == this.#products.length) {
             return {
                 status: 'error',
                 msg: 'Id not found'
@@ -234,15 +239,16 @@ export default class ProductManager {
         }
         
         try {
-            await fs.promises.writeFile(`${this.path}/products.json`, JSON.stringify(newProducts));
+            await fs.promises.writeFile(this.#filePath, JSON.stringify(newProducts));
+            this.#products = newProducts;
             return {
                 status: 'success',
                 msg: 'Item deleted succesfully'
             }
-        } catch (err) {
+        } catch (error) {
             return {
                 status: 'error',
-                msg: `Something went wrong while deleting product: ${err}`
+                msg: `Something went wrong while deleting product: ${error}`
             }
         }
         

@@ -4,13 +4,11 @@ socket.on('products', data => {
     const productsDiv = document.querySelector('.products');
     let html = '<ul>'
 
-    console.log(data);
-
     data.forEach(product => {
         html += `<li id=${product.code}>${product.title}`
         html += `<ul class='product-info' id='${product.code}'>`
 
-        html += `<li class='product-data id' id='${product.code}-id' hidden>${product._id}</li>`
+        html += `<li class='product-data id' id='${product.code}-id' hidden>${product.id}</li>`
         html += `<li class='product-data description' id='${product.code}-description'>${product.description}</li>`
         html += `<li class='product-data price' id='${product.code}-price '>$${product.price}</li>`
         html += `<li class='product-data stock' id='${product.code}-stock'>${product.stock}</li>`
@@ -33,12 +31,12 @@ const deleteButtonsFuncionality = () => {
 
         const id = document.querySelector(`#${code}-id`).innerText;
     
-        button.onclick = async () => {
-            await fetch(`/api/products/${id}`,{
+        button.onclick = () => {
+            fetch(`/api/products/${id}`,{
                 method: 'DELETE'
             })
-            
-            socket.send('update')
+            .then(response => response.json())
+            .then(result => console.log(result))
         }
     });
 }
@@ -77,9 +75,9 @@ submitButton.onclick = async (event) => {
         body: JSON.stringify(added)
     })
 
-    const message = await response.json()
+    const message = await response.json();
 
-    document.querySelector('#alert-messages').innerText = message.status
+    document.querySelector('#alert-messages').innerText = message.msg
 
     document.querySelector('#form-title-input').value = '';
     document.querySelector('#form-description-input').value = '';
@@ -88,6 +86,4 @@ submitButton.onclick = async (event) => {
     document.querySelector('#form-stock-input').value = '';
     document.querySelector('#form-category-input').value = '';
     document.querySelector('#form-code-input').value = '';
-
-    socket.send('update')
 }

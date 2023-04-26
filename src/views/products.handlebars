@@ -1,0 +1,56 @@
+<div id="root">
+    <h1>Productos:</h1>
+    <div id="products">
+        <ul>
+            {{#each products}}
+                <li id="{{_id}}">
+                    {{ title }}
+                    <ul class="product-info" id="{{_id}}">
+                        <li class="product-data description" id="{{_id}}-description">{{ description }}</li>
+                        <li class="product-data price" id="{{_id}}-price">${{ price }}</li>
+                        <li class="product-data stock" id="{{_id}}-stock">{{ stock }}</li>
+                        <li class="product-data category" id="{{_id}}-category">Category: {{ category }}</li>
+                        <li class="product-data button" id="{{_id}}-button-outer">
+                            {{#if status}}
+                                <button id="{{_id}}-button">Agregar al carrito</button>
+                            {{else}}
+                                Producto discontinuado
+                            {{/if}}
+                        </li>
+                    </ul>
+                </li>
+                <br>
+            {{/each}}
+        </ul>
+        <div id="page-links">
+            {{#if prev}}
+            <a href="{{prev}}" class="prevLink">Anterior</a>
+            {{/if}}
+            {{#if next}}
+            <a href="{{next}}" class="prevLink">Siguiente</a>
+            {{/if}}
+        </div>
+    </div>
+    {{!-- <h1>Productos discontinuados:</h1>
+    <div id="dis-products">
+        <ul>
+            {{#each products}}
+                {{#unless status}}
+                <li id="{{_id}}">
+                    {{ title }}
+                    <ul class="product-info" id="dis-{{_id}}">
+                        <li class="product-data description" id="dis-{{_id}}-description">{{ description }}</li>
+                        <li class="product-data price" id="dis-{{_id}}-price">${{ price }}</li>
+                        <li class="product-data stock" id="dis-{{_id}}-stock">{{ stock }}</li>
+                        <li class="product-data category" id="dis-{{_id}}-category">Category: {{ category }}</li>
+                    </ul>
+                </li>
+                <br>
+                {{/unless}}
+            {{/each}}
+        </ul>
+    </div> --}}
+</div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script type="module" src="static/js/products.js"></script>

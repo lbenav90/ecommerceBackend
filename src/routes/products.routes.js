@@ -1,17 +1,17 @@
 import { Router } from 'express';
-import ProductManager from '../public/js/productManager.js';
+import ProductService from '../dao/db/product.services.js';
+// import ProductService from '../dao/filesystem/product.services.js';
 
-const manager = new ProductManager('products');
+const manager = new ProductService();
 
 const router = Router();
 
 router.get('/', async (req, res) => {
-    const limit = parseInt(req.query.limit)
-    
-    const products = await manager.getProducts()
+    const products = await manager.getProducts(req.query)
 
-    // Puse para que en el caso de limit, dé los productos en orden. Podría elegir al azar, no sabía cual era la instrucción
-    res.status(200).send(limit? products.slice(0, limit) : products)
+    const code = products.status === 'success'? 200 : 400;
+
+    res.status(code).send(products)
 });
 
 router.post('/', async (req, res) => {
@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/:pid', async (req, res) => {
-    const id = parseInt(req.params.pid);
+    const id = req.params.pid;
 
     const product = await manager.getProductById(id)
 
@@ -33,7 +33,7 @@ router.get('/:pid', async (req, res) => {
 });
 
 router.put('/:pid', async (req, res) => {
-    const id = parseInt(req.params.pid);
+    const id = req.params.pid;
 
     const updated = await manager.updateProduct(id, req.body)
 
@@ -43,7 +43,7 @@ router.put('/:pid', async (req, res) => {
 });
 
 router.delete('/:pid', async (req, res) => {
-    const id = parseInt(req.params.pid);
+    const id = req.params.pid;
 
     const deleted = await manager.deleteProduct(id);
 
