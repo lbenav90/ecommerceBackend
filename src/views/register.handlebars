@@ -1,0 +1,32 @@
+<div id="root">
+    <h1>Registro</h1>
+    <form id="signup-form" action="" method="post">
+        <div id="firstname-signup-div">
+            <label for="first_name">Nombres:</label>
+            <input type="text" name="first_name" id="firstname-field" >
+        </div>
+        <div id="lastname-signup-div">
+            <label for="last_name">Apellidos:</label>
+            <input type="text" name="last_name" id="lastname-field" >
+        </div>
+        <div id="email-signup-div">
+            <label for="email">Email:</label>
+            <input type="text" name="email" id="email-field" >
+        </div>
+        <div id="age-signup-div">
+            <label for="age">Edad:</label>
+            <input type="number" name="age" id="age-field" >
+        </div>
+        <div id="password-signup-div">
+            <label for="password">Contraseña:</label>
+            <input type="password" name="password" id="password-field" >
+        </div>
+        <div id="confirm-signup-div">
+            <label for="confirm">Confirmar:</label>
+            <input type="password" name="confirm" id="confirm-field" >
+        </div>
+        <input type="submit" value="Enviar">
+    </form>
+    <p>Ya estas registrado? <a href="/users/login">Ingresa aquí</a></p>
+</div>
+<script type="module" src="/static/js/register.js"></script>

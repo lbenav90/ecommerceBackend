@@ -4,14 +4,19 @@ import __dirname from './utils.js';
 import productRoutes from './src/routes/products.routes.js';
 import cartRoutes from './src/routes/cart.routes.js';
 import viewRouter from './src/routes/views.routes.js';  
+import userRouter from './src/routes/user.routes.js';  
+import sessionRouter from './src/routes/session.routes.js';
 //import ProductService from './src/dao/filesystem/product.services.js';
 import ProductService from './src/dao/db/product.services.js';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 const app = express();
 const PORT = 8080;
 const pass = 'Leobena2274';
+const MONGO_URL = `mongodb+srv://leobena08:${pass}@ecommerce.zesou2s.mongodb.net/?retryWrites=true&w=majority`
 
 // Configuration to use JSON data
 app.use(express.json())
@@ -22,21 +27,30 @@ app.engine('handlebars', handlebars.engine({runtimeOptions: { allowProtoProperti
 app.set('views', __dirname + '/src/views')
 app.set('view engine', 'handlebars')
 
-// const hbs = handlebars.create({});
-// hbs.handlebars.registerHelper('check', function(value, comparator) {
-//     return (value === comparator) ? 'No content' : value;
-// });
+app.use(session({
+    store: new MongoStore({
+        mongoUrl:MONGO_URL,
+        mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
+        ttl: 400
+    }),
+    secret: 'SuperS3cretStash',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false, httpOnly: false }
+}))
 
 // Set the static file location
 app.use('/static', express.static(__dirname + '/src/public'))
 
 app.use('/api/products', productRoutes);
 app.use('/api/carts', cartRoutes);
+app.use('/api/sessions', sessionRouter);
 app.use('/realtimeproducts', viewRouter);
+app.use('/users', userRouter);
 
 const connectMongoDB = async () => {
     try {
-        await mongoose.connect(`mongodb+srv://leobena08:${pass}@ecommerce.zesou2s.mongodb.net/?retryWrites=true&w=majority`)
+        await mongoose.connect(MONGO_URL)
     } catch (error) {
         console.error("No se pudo conectar a la BD usando Moongose: " + error);
         process.exit();
@@ -50,9 +64,10 @@ let products = await manager.getProducts();
 
 app.get('/products', async (req, res) => {   
     let products = await manager.getProducts(req.query);
-    
+
     res.render('products', { 
         products: products.docs,
+        user: req.session.user,
         title: 'Productos',
         prev: products.prevLink,
         next: products.nextLink

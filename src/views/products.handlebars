@@ -1,5 +1,11 @@
 <div id="root">
     <h1>Productos:</h1>
+    {{#if user}}
+        <h2>Bienvenido {{ user.name }}!</h2>
+        <a href="/users/logout">Salir</a>
+    {{else}}
+        <p>No hay un usuario loggueado <a href="/users/login">Ingresar</a></p>
+    {{/if}}
     <div id="products">
         <ul>
             {{#each products}}
