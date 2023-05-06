@@ -2,25 +2,21 @@ import mongoose from "mongoose";
 
 const userCollection = 'users';
 const userSchema = new mongoose.Schema({
-    first_name: { type: String, required: true },
-    last_name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    age: { type: Number, required: true },
-    password: { type: String, required: true },
-    // cart: { type: {
-    //                 products: {
-    //                         type: mongoose.Schema.Types.ObjectId,
-    //                         ref: 'carts'
-    //                     }
-    //         }, 
-    //         default: '',
-    //         required: true },
-    role: { type: String, required: true, default: 'user' }
+    first_name: { type: String},
+    last_name: { type: String },
+    email: { type: String, unique: true },
+    age: { type: Number },
+    password: { type: String },
+    cart: { type: mongoose.Schema.Types.ObjectId,
+            ref: 'carts',
+            required: true },
+    role: { type: String, required: true, default: 'user' },
+    loggedBy: String
 })
 
-// userSchema.pre('find', function () {
-//     this.populate("carts.products")
-// })
+userSchema.pre('find', function () {
+    this.populate("cart")
+})
 
 const userModel = mongoose.model(userCollection, userSchema);
 

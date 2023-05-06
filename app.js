@@ -6,12 +6,16 @@ import cartRoutes from './src/routes/cart.routes.js';
 import viewRouter from './src/routes/views.routes.js';  
 import userRouter from './src/routes/user.routes.js';  
 import sessionRouter from './src/routes/session.routes.js';
+import gitHubLoginViewRouter from './src/routes/github-login.routes.js'
 //import ProductService from './src/dao/filesystem/product.services.js';
 import ProductService from './src/dao/db/product.services.js';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
+import CartService from './src/dao/db/cart.services.js';
+import passport from 'passport';
+import initializePassport from './src/config/passport.config.js';
 
 const app = express();
 const PORT = 8080;
@@ -39,6 +43,10 @@ app.use(session({
     cookie: { secure: false, httpOnly: false }
 }))
 
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Set the static file location
 app.use('/static', express.static(__dirname + '/src/public'))
 
@@ -47,6 +55,7 @@ app.use('/api/carts', cartRoutes);
 app.use('/api/sessions', sessionRouter);
 app.use('/realtimeproducts', viewRouter);
 app.use('/users', userRouter);
+app.use('/github', gitHubLoginViewRouter)
 
 const connectMongoDB = async () => {
     try {
@@ -59,6 +68,7 @@ const connectMongoDB = async () => {
 connectMongoDB();
 
 const manager = new ProductService();
+const cartManager = new CartService();
 
 let products = await manager.getProducts();
 
@@ -74,9 +84,11 @@ app.get('/products', async (req, res) => {
     })
 })
 
-app.get('/cart', (req, res) => {
+app.get('/cart', async (req, res) => {
+    // const cart = await cartManager.getCart(id)
     res.render('cart', { 
-        title: 'Carrito'
+        title: 'Carrito',
+        // cart: cart.data
     })
 })
 
