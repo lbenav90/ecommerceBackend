@@ -2,9 +2,7 @@ import cartModel from "./models/carts.js";
 import productModel from "./models/products.js";
 
 export default class CartService {
-
     constructor() { 
-        console.log("Working carts with Database persistence in mongodb");
     }
 
     getAll = async () => {

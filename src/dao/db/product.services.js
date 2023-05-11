@@ -2,7 +2,6 @@ import productModel from "./models/products.js";
 
 export default class ProductService {
     constructor() { 
-        console.log("Working products with Database persistence in mongodb");
     }
 
     getProducts = async (querys) => {
