@@ -1,8 +1,27 @@
 <div id="root">
     <h1>Productos en el carrito:</h1>
+    <a href="/products">Seguir comprando</a>
     <div id="products">
-        <ul></ul>
+        <ul>
+             {{#each cart}}
+                <li id="{{this._id}}">
+                    {{ this.product.title }}
+                    <ul class="product-info" id="{{this._id}}">
+                        <li class="product-data description" id="{{this._id}}-description">{{ this.product.description }}</li>
+                        <li class="product-data price" id="{{this._id}}-price">${{ this.product.price }}</li>
+                        <li class="product-data category" id="{{this._id}}-category">Category: {{ this.product.category }}</li>
+                        <li class="product-data category" id="{{this._id}}-category">Quantity: {{ this.quantity }}</li>
+                        <li class="product-data button" id="{{this._id}}-button-outer">
+                            {{#if this.product.status}}
+                                <button id="{{_id}}-button">Agregar al carrito</button>
+                            {{else}}
+                                Producto discontinuado
+                            {{/if}}
+                        </li>
+                    </ul>
+                </li>
+                <br>
+            {{/each}}
+        </ul>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script type="module" src="static/js/cart.js"></script>

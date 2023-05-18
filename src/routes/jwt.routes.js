@@ -1,11 +1,11 @@
 import { Router } from "express";
+import { createHash, generateJWToken, isValidPassword } from "../../utils.js";
 import passport from "passport";
-import { generateJWToken, isValidPassword } from "../../utils.js";
 import userModel from "../dao/db/models/users.js";
 import CartService from "../dao/db/cart.services.js";
 
 const router = Router();
-const cManager = new CartService();
+const cManager = new CartService()
 
 // Register
 router.post('/register', async (req, res) => {
@@ -15,19 +15,19 @@ router.post('/register', async (req, res) => {
 
         if (exists) {
             console.log('El usuario ya existe')
-            return done(null, false)
+            return res.status(401).send({ status:'error', msg: 'Credenciales inválidas' })
         }
-
+        
         if (password !== confirm) {
             console.log('Las contraseñas no coinciden')
-            return done(null, false)
+            return res.status(401).send({ status:'error', msg: 'Credenciales inválidas' })
         }
-
+        
         const cart = await cManager.addCart();
-
+        
         if (cart.status === 'error') { 
             console.log('Error del servidor creando el carrito')
-            return done(null, false)
+            return res.status(500).send({ status:'error', msg: 'Error del servidor creando el carrito, reintente' })
         }
 
         const user = {
@@ -40,13 +40,13 @@ router.post('/register', async (req, res) => {
             role: email === 'adminCoder@coder.com'? 'admin': 'user',
             loggedBy: 'login'
         }
-        
+
         const result = await userModel.create(user);
 
-        return done(null, result)
+        return res.status(201).send({ status:'success', msg: 'Usuario creado', user: result })
 
     } catch (err) {
-        return done('Error registrando el usuario: ' + err)
+        return res.status(500).send({ status:'error', msg: 'Error del servidor creando el usuario, reintente' })
     }
 })
 
@@ -81,7 +81,7 @@ router.post('/login', async (req, res) => {
 
         // Cookie setup
         res.cookie('jwtCookieToken', access_token, {
-            maxAge: 60000,
+            maxAge: 600000,
             httpOnly: true
         })
 
@@ -93,12 +93,16 @@ router.post('/login', async (req, res) => {
     }
 })
 
-router.get('fail-register', (req, res) => {
-    res.status(401).send({ status: 'error', msg: 'Failed to process register' })
+router.get('/github', passport.authenticate('github', { scope: ['user:email'] }), async (req, res) => {})
+
+
+router.get('/githubcallback', passport.authenticate('github', { failureRedirect: '/github/error' }), async (req, res) => {
+    res.status(200).send({ status: 'success', msg: 'Primer login realizado', payload: req.user })
+    res.redirect('/github')
 })
 
-router.get('fail-login', (req, res) => {
-    res.status(401).send({ status: 'error', msg: 'Failed to process login' })
+router.get('fail-register', (req, res) => {
+    res.status(401).send({ status: 'error', msg: 'Failed to process register' })
 })
 
 export default router;
