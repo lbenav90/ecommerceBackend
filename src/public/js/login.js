@@ -5,12 +5,12 @@ form.addEventListener('submit', event => {
     const data = new FormData(form);
 
     const obj = {};
-    data.forEach((value,key) => obj[key] = value);
+    data.forEach((value, key) => obj[key] = value);
 
     fetch('/api/jwt/login',{
-        method:'POST',
-        body:JSON.stringify(obj),
-        headers:{
+        method: 'POST',
+        body: JSON.stringify(obj),
+        headers: {
             'Content-Type':'application/json'
         }
     }).then(result => {

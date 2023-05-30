@@ -2,9 +2,6 @@ import cartModel from "./models/carts.js";
 import productModel from "./models/products.js";
 
 export default class CartService {
-    constructor() { 
-    }
-
     getAll = async () => {
         try {
             let carts = await cartModel.find();
