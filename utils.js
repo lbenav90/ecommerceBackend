@@ -44,27 +44,8 @@ export const isValidPassword = (user, password) => bcrypt.compareSync(password, 
 export const JWT_PRIVATE_KEY = "CoderHouseBenavidesEcommerceBackendLeandro";
 
 export const generateJWToken = (user) => {
-    return jwt.sign({ user }, JWT_PRIVATE_KEY, { expiresIn: '60s' })
+    return jwt.sign({ user }, JWT_PRIVATE_KEY, { expiresIn: '10m' })
 }
-
-// export const authToken = (req, res, next) => {
-//     //El JWT token se guarda en los headers de autorización.
-//     const authHeader = req.headers.authorization;
-
-//     if (!authHeader) {
-//         return res.status(401).send({error: "User not authenticated or missing token."});
-//     }
-//     const token = authHeader.split(' ')[1]; //Se hace el split para retirar la palabra Bearer
-
-//     //Validar token
-//     jwt.verify(token, PRIVATE_KEY, (error, credentials) => {
-//         if (error) return res.status(403).send({error: "Token invalid, Unauthorized!"});
-//         //Token OK
-//         req.user = credentials.user;
-//         console.log(req.user);
-//         next();
-//     });
-// };
 
 export const passportCall = (strategy) => {
     return async (req, res, next) => {
@@ -84,7 +65,7 @@ export const passportCall = (strategy) => {
 export const authorization = (role) => {
     return async (req, res, next) => {
         if (!req.user) return res.status(401).send('Unauthorized: User not found in JWT')
-        if (req.user.role !== role) {
+        if (req.user.role !== role && req.user.role !== 'admin') {
             return res.status(403).send('Forbidden: El usuario no tiene permiso son este rol')
         }
         next()

@@ -5,6 +5,7 @@ import viewsRouter from './src/routes/views.routes.js'
 import productRoutes from './src/routes/products.routes.js';
 import cartRoutes from './src/routes/cart.routes.js';
 import userViewsRouter from './src/routes/user.views.routes.js';  
+import gitHubLoginViewRouter from './src/routes/github-login.routes.js'
 import userRouter from './src/routes/user.routes.js'
 import jwtRouter from './src/routes/jwt.routes.js';
 import mongoose from 'mongoose';
@@ -33,7 +34,6 @@ app.use(cookieParser('CoderHouseBackendBenavides'))
 initializePassport();
 app.use(passport.initialize());
 
-
 // Set the static file location
 app.use('/static', express.static(__dirname + '/src/public'))
 
@@ -42,7 +42,8 @@ app.use('/', viewsRouter)
 app.use('/api/products', productRoutes);
 app.use('/api/carts', cartRoutes);
 app.use('/api/users', userRouter);
-app.use('/api/jwt', jwtRouter)
+app.use('/api/jwt', jwtRouter);
+app.use('/github', gitHubLoginViewRouter);
 app.use('/users', userViewsRouter);
 
 app.listen(PORT, () => {

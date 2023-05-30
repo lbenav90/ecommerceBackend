@@ -3,6 +3,8 @@
     {{#if user}}
         <h2>Bienvenido {{ user.name }}!</h2>
         <a href="/users/logout">Salir</a>
+        <a href="/cart">Carrito</a>
+        <input type="hidden" name="cartId" id="cartId" value="{{user.cart}}">
     {{else}}
         <p>No hay un usuario loggueado <a href="/users/login">Ingresar</a></p>
     {{/if}}
@@ -59,4 +61,4 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<script type="module" src="static/js/products.js"></script>
+<script type="text/javascript" src="/static/js/products.js"></script>

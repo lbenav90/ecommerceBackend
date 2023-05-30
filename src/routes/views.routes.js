@@ -1,27 +1,36 @@
 import { Router } from "express";
 import ProductService from "../dao/db/product.services.js";
-import cookieParser from "cookie-parser";
+import jwt from 'jsonwebtoken';
+import { JWT_PRIVATE_KEY } from "../../utils.js";
+import CartService from "../dao/db/cart.services.js";
 
 const router = Router();
 const manager = new ProductService();
+const cManager = new CartService();
 
 router.get('/products', async (req, res) => {   
     let products = await manager.getProducts(req.query);
+    const userToken = req.cookies['jwtCookieToken']
+    jwt.verify(userToken, JWT_PRIVATE_KEY, (error, credentials) => {
+        if (error) return;
+        req.user = credentials.user;
+    });
 
     res.render('products', { 
         products: products.docs,
-        user: req.session.user,
+        user: req.user,
         title: 'Productos',
         prev: products.prevLink,
         next: products.nextLink
     })
 })
 
-router.get('/cart', async (req, res) => {
-    // const cart = await cartManager.getCart(id)
+router.get('/cart', authUser, async (req, res) => {
+    const cart = await cManager.getCart(req.user.cart)
+    console.log(cart.data.products);
     res.render('cart', { 
         title: 'Carrito',
-        // cart: cart.data
+        cart: cart.data.products
     })
 })
 
@@ -29,25 +38,22 @@ router.get('/',  (req, res) => {
     res.render('index', {})
 })
 
+function authUser(req, res, next) {
+    const userToken = req.cookies['jwtCookieToken']
+    jwt.verify(userToken, JWT_PRIVATE_KEY, (error, credentials) => {
+        if (error) return res.status(403).send({error: "Token invalid, Unauthorized!"});
+        //Token OK
+        req.user = credentials.user;
+    });
 
-router.get('/logout', (req, res) => {
-    req.session.destroy(error => {
-        if (error) {
-            res.json({ error: 'logout error', msg: 'Error al cerrar la sesión'})
-        }
-    })
-    res.redirect('/products')
-})
-
-function auth(req, res, next) {
-    if (req.session.user && req.session.admin) {
+    if (req.user && req.user.role === 'user') {
         return next()
     } else {
-        return res.status(403).send('Usuario no autorizado para ingresar a este recurso')
+        return res.redirect('/users/login')
     }
 }
 
-router.get('private', auth, (req, res) => {
+router.get('/private', authUser, (req, res) => {
     res.send('Si estas viendo esto, estas autorizado')
 })
 
