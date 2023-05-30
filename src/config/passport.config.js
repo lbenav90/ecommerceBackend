@@ -1,15 +1,16 @@
 import passport from "passport";
 import jwtStrategy from 'passport-jwt';
 import GitHubStrategy from 'passport-github2';
-import passportLocal from 'passport-local';
 import userModel from '../dao/db/models/users.js';
-import { JWT_PRIVATE_KEY, createHash } from '../../utils.js'
-import CartService from "../dao/db/cart.services.js";
+import { JWT_PRIVATE_KEY } from '../../utils.js'
+import program from "../../process.js";
+
+const CartModule = program.opts().system === 'database'? await import('../dao/db/cart.services.js') : await import('../dao/filesystem/cart.services.js');
+const CartService = CartModule.default
 
 const JwtStrategy = jwtStrategy.Strategy;
 const ExtractJWT = jwtStrategy.ExtractJwt;
-const localStrategy = passportLocal.Strategy;
-const cManager = new CartService();
+const cManager = CartService.getInstance();
 
 const initializePassport = () => {
     passport.use('jwt', new JwtStrategy(

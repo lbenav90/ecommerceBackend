@@ -2,6 +2,7 @@ import fs from 'fs';
 import __dirname, { checkType } from '../../../utils.js';
 
 export default class ProductService {
+    static #instance;
     #products;
     #dirPath;
     #filePath;
@@ -23,6 +24,13 @@ export default class ProductService {
             'category': 'string', 
             'status': 'boolean'
         } // Attributes in products and corresponding types
+    }
+
+    static getInstance() {
+        if (!this.#instance) {
+            this.#instance = new ProductService()
+        }
+        return this.#instance
     }
 
     async #setDirectory() {

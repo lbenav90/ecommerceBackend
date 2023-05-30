@@ -1,7 +1,13 @@
 import productModel from "./models/products.js";
 
 export default class ProductService {
-    constructor() { 
+    static #instance;
+
+    static getInstance() {
+        if (!this.#instance) {
+            this.#instance = new ProductService()
+        }
+        return this.#instance
     }
 
     getProducts = async (querys) => {

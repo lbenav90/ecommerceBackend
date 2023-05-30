@@ -23,7 +23,10 @@ router.get('/register', (req, res) => {
 })
 
 router.get('/error', (req, res) => {
-    res.render('error')
+    const { error } = req.query
+    res.render('error', {
+        error: error
+    })
 })
 
 

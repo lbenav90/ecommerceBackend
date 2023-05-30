@@ -2,10 +2,14 @@ import { Router } from "express";
 import { createHash, generateJWToken, isValidPassword } from "../../utils.js";
 import passport from "passport";
 import userModel from "../dao/db/models/users.js";
-import CartService from "../dao/db/cart.services.js";
+
+import program from '../../process.js';
+
+const CartModule = program.opts().system === 'database'? await import('../dao/db/cart.services.js') : await import('../dao/filesystem/cart.services.js');
+const CartService = CartModule.default
 
 const router = Router();
-const cManager = new CartService()
+const cManager = CartService.getInstance();
 
 // Register
 router.post('/register', async (req, res) => {
@@ -96,13 +100,30 @@ router.post('/login', async (req, res) => {
 router.get('/github', passport.authenticate('github', { scope: ['user:email'] }), async (req, res) => {})
 
 
-router.get('/githubcallback', passport.authenticate('github', { failureRedirect: '/github/error' }), async (req, res) => {
-    res.status(200).send({ status: 'success', msg: 'Primer login realizado', payload: req.user })
-    res.redirect('/github')
+router.get('/githubcallback', passport.authenticate('github', { failureRedirect: '/error' }), async (req, res) => {
+    const user = req.user
+    console.log(user);
+    const tokenUser =  {
+        name: `${user.first_name} ${user.last_name}`,
+        email: user.email,
+        age: user.age,
+        cart: user.cart,
+        role: user.role
+    }
+
+    const access_token = generateJWToken(tokenUser);
+
+    // Cookie setup
+    res.cookie('jwtCookieToken', access_token, {
+        maxAge: 600000,
+        httpOnly: true
+    })
+
+    res.redirect('/users')
 })
 
-router.get('fail-register', (req, res) => {
-    res.status(401).send({ status: 'error', msg: 'Failed to process register' })
+router.get('/error', (req, res) =>{
+    res.render('error', { error: 'No se pudo autenticar usando Github!' })
 })
 
 export default router;

@@ -2,6 +2,7 @@ import fs from 'fs';
 import __dirname from '../../../utils.js';
 
 export default class CartService {
+    static #instance;
     #carts;
     #dirPath;
     #filePath;
@@ -12,6 +13,13 @@ export default class CartService {
         this.#dirPath = __dirname + '/files/carts';
         this.#filePath = this.#dirPath + '/carts.json';
         this.#fileSystem = fs;
+    }
+
+    static getInstance() {
+        if (!this.#instance) {
+            this.#instance = new CartService()
+        }
+        return this.#instance
     }
 
     async #setDirectory() {

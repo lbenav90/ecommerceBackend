@@ -1,11 +1,14 @@
 import { Router } from 'express';
-import CartService from '../dao/db/cart.services.js';
-import ProductService from '../dao/db/product.services.js';
-//import CartService from '../dao/filesystem/cart.services.js';
-//import ProductService from '../dao/filesystem/product.services.js';
+import program from '../../process.js';
 
-const pService = new ProductService();
-const cService = new CartService();
+const ProductModule = program.opts().system === 'database'? await import('../dao/db/product.services.js') : await import('../dao/filesystem/product.services.js');
+const CartModule = program.opts().system === 'database'? await import('../dao/db/cart.services.js') : await import('../dao/filesystem/cart.services.js');
+
+const CartService = CartModule.default
+const ProductService = ProductModule.default
+
+const pService = ProductService.getInstance();
+const cService = CartService.getInstance();
 
 const router = Router();
 

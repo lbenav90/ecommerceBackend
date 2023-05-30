@@ -1,6 +1,7 @@
 <div id="root">
     <h1>Productos en el carrito:</h1>
     <a href="/products">Seguir comprando</a>
+    <input type="hidden" name="cartId" id="cartId" value="{{user.cart}}">
     <div id="products">
         <ul>
              {{#each cart}}
@@ -12,11 +13,7 @@
                         <li class="product-data category" id="{{this._id}}-category">Category: {{ this.product.category }}</li>
                         <li class="product-data category" id="{{this._id}}-category">Quantity: {{ this.quantity }}</li>
                         <li class="product-data button" id="{{this._id}}-button-outer">
-                            {{#if this.product.status}}
-                                <button id="{{_id}}-button">Agregar al carrito</button>
-                            {{else}}
-                                Producto discontinuado
-                            {{/if}}
+                        <button id="{{_id}}-button" class='product-data button'>Borrar</button>
                         </li>
                     </ul>
                 </li>
@@ -25,3 +22,6 @@
         </ul>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script type="text/javascript" src="/static/js/cart.js"></script>

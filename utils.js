@@ -3,6 +3,7 @@ import { dirname } from 'path';
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
 import passport from "passport";
+import config from "./src/config/config.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -41,7 +42,7 @@ export const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSy
 export const isValidPassword = (user, password) => bcrypt.compareSync(password, user.password);
 
 // JSON Web Token functions
-export const JWT_PRIVATE_KEY = "CoderHouseBenavidesEcommerceBackendLeandro";
+export const JWT_PRIVATE_KEY = config.JWTPrivateKey;
 
 export const generateJWToken = (user) => {
     return jwt.sign({ user }, JWT_PRIVATE_KEY, { expiresIn: '10m' })
@@ -72,5 +73,12 @@ export const authorization = (role) => {
     }
 }
 
+export const verifyJWT = (req) => {
+    const userToken = req.cookies['jwtCookieToken']
+    jwt.verify(userToken, JWT_PRIVATE_KEY, (error, credentials) => {
+        if (error) return;
+        req.user = credentials.user;
+    });
+}
 
 export default __dirname;
