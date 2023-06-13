@@ -1,7 +1,7 @@
 import fs from 'fs';
-import __dirname, { checkType } from '../../../utils.js';
+import __dirname, { checkType } from '../../utils.js';
 
-export default class ProductService {
+export default class ProductServiceFile {
     static #instance;
     #products;
     #dirPath;
@@ -28,7 +28,7 @@ export default class ProductService {
 
     static getInstance() {
         if (!this.#instance) {
-            this.#instance = new ProductService()
+            this.#instance = new ProductServiceFile()
         }
         return this.#instance
     }
@@ -110,8 +110,8 @@ export default class ProductService {
         const max_id = this.#products.length === 0? 0: this.#products.sort((p1, p2) => p1.id > p2.id? -1: 1)[0].id;
 
         try {
-            await this.#fileSystem.promises.writeFile(this.#filePath, JSON.stringify(this.#products))
             this.#products.push({ id: max_id + 1, ...product })
+            await this.#fileSystem.promises.writeFile(this.#filePath, JSON.stringify(this.#products))
             return {
                 status: 'success',
                 msg: 'Product added successfully'

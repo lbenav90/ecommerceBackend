@@ -1,16 +1,11 @@
 import passport from "passport";
 import jwtStrategy from 'passport-jwt';
 import GitHubStrategy from 'passport-github2';
-import userModel from '../dao/db/models/users.js';
-import { JWT_PRIVATE_KEY } from '../../utils.js'
-import program from "../../process.js";
-
-const CartModule = program.opts().system === 'database'? await import('../dao/db/cart.services.js') : await import('../dao/filesystem/cart.services.js');
-const CartService = CartModule.default
+import { JWT_PRIVATE_KEY } from '../utils.js'
+import { cManager, uManager } from '../services/factory.js'
 
 const JwtStrategy = jwtStrategy.Strategy;
 const ExtractJWT = jwtStrategy.ExtractJwt;
-const cManager = CartService.getInstance();
 
 const initializePassport = () => {
     passport.use('jwt', new JwtStrategy(
@@ -38,7 +33,7 @@ const initializePassport = () => {
         callbackURL: 'http://localhost:8080/api/jwt/githubcallback'
     }, async (accessToken, refreshToken, profile, done) => {
         try {
-            let user = await userModel.findOne({ email: profile._json.email })
+            let user = await uManager.getByEmail(profile._json.email)
             if (!user) {
                 const cart = await cManager.addCart();
 
@@ -57,7 +52,7 @@ const initializePassport = () => {
                     loggedBy: 'github'
                 }
 
-                let result = await userModel.create(newUser);
+                let result = uManager.create(newUser)
                 done(null, result)
             } else {
                 done(null, user)
@@ -74,7 +69,7 @@ const initializePassport = () => {
 
     passport.deserializeUser(async (id, done) => {
         try {
-            let user = await userModel.findById(id);
+            let user = await uManager.getById(id)
             done(null, user)
         } catch (err) {
             console.error("Error deserializando el usuario: " + err);

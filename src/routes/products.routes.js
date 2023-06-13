@@ -1,23 +1,19 @@
 import { Router } from 'express';
-import program from '../../process.js';
-
-const ProductModule = program.opts().system === 'database'? await import('../dao/db/product.services.js') : await import('../dao/filesystem/product.services.js');
-const ProductService = ProductModule.default
-
-const manager = ProductService.getInstance();
+import { pManager } from '../services/factory.js';
+import { authUser, authorization } from '../utils.js';
 
 const router = Router();
 
 router.get('/', async (req, res) => {
-    const products = await manager.getProducts(req.query)
+    const products = await pManager.getProducts(req.query)
 
     const code = products.status === 'success'? 200 : 400;
 
     res.status(code).send(products)
 });
 
-router.post('/', async (req, res) => {
-    const added = await manager.addProduct(req.body);
+router.post('/', authUser, authorization(['admin']), async (req, res) => {
+    const added = await pManager.addProduct(req.body);
 
     const code = added.status === 'success'? 200: 400;
 
@@ -27,27 +23,27 @@ router.post('/', async (req, res) => {
 router.get('/:pid', async (req, res) => {
     const id = req.params.pid;
 
-    const product = await manager.getProductById(id)
+    const product = await pManager.getProductById(id)
 
     const code = product.status === 'error'? 400: 200;
 
     res.status(code).send({ code: code, ...product })
 });
 
-router.put('/:pid', async (req, res) => {
+router.put('/:pid', authUser, authorization(['admin']), async (req, res) => {
     const id = req.params.pid;
 
-    const updated = await manager.updateProduct(id, req.body)
+    const updated = await pManager.updateProduct(id, req.body)
 
     const code = updated.status === 'error'? 400: 200;
 
     res.status(code).send( { code: code, ...updated });
 });
 
-router.delete('/:pid', async (req, res) => {
+router.delete('/:pid', authUser, authorization(['admin']), async (req, res) => {
     const id = req.params.pid;
 
-    const deleted = await manager.deleteProduct(id);
+    const deleted = await pManager.deleteProduct(id);
 
     const code = deleted.status === 'error'? 400: 200;
 

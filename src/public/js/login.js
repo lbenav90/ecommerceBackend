@@ -7,7 +7,7 @@ form.addEventListener('submit', event => {
     const obj = {};
     data.forEach((value, key) => obj[key] = value);
 
-    fetch('/api/jwt/login',{
+    fetch('/api/jwt/login', {
         method: 'POST',
         body: JSON.stringify(obj),
         headers: {
@@ -19,7 +19,7 @@ form.addEventListener('submit', event => {
             .then(json => {
                 console.log(json);
                 console.log('Cookies generadas: \n' + document.cookie);
-                window.location.replace('/users');
+                window.location.replace('/users/current');
             })
         } else if(result.status === 401){
             alert("Login invalido!!")

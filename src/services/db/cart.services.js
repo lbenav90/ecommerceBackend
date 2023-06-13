@@ -1,12 +1,12 @@
 import cartModel from "./models/carts.js";
 import productModel from "./models/products.js";
 
-export default class CartService {
+export default class CartServiceDB {
     static #instance;
 
     static getInstance() {
         if (!this.#instance) {
-            this.#instance = new CartService()
+            this.#instance = new CartServiceDB()
         }
         return this.#instance
     }
@@ -74,7 +74,6 @@ export default class CartService {
                 notValid = product.product;
             }
         }
-        console.log(notValid, 8);
         
         if (notValid) { return { status: 'error', msg: `Producto de id ${notValid} no es válido`} }
 

@@ -1,7 +1,7 @@
 import fs from 'fs';
-import __dirname from '../../../utils.js';
+import __dirname from '../../utils.js';
 
-export default class CartService {
+export default class CartServiceFile {
     static #instance;
     #carts;
     #dirPath;
@@ -17,7 +17,7 @@ export default class CartService {
 
     static getInstance() {
         if (!this.#instance) {
-            this.#instance = new CartService()
+            this.#instance = new CartServiceFile()
         }
         return this.#instance
     }

@@ -3,10 +3,14 @@ import { dirname } from 'path';
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
 import passport from "passport";
-import config from "./src/config/config.js";
+import config from "./config/config.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+export function createCode() {
+    return String(Number(new Date())) + Math.random().toString(36).slice(2)
+}
 
 export function checkType(product, key, productConfig) {
     const type = typeof(product[key])
@@ -63,22 +67,44 @@ export const passportCall = (strategy) => {
     }
 }
 
-export const authorization = (role) => {
+export const authorization = (roles) => {
     return async (req, res, next) => {
-        if (!req.user) return res.status(401).send('Unauthorized: User not found in JWT')
-        if (req.user.role !== role && req.user.role !== 'admin') {
-            return res.status(403).send('Forbidden: El usuario no tiene permiso son este rol')
+        if (!req.user) {
+            const encoded = encodeURIComponent('Unauthorized: User not found in JWT')
+            return res.redirect('/users/error/?error=' + encoded)
+        }
+        if (!roles.includes(req.user.role)) {
+            const encoded = encodeURIComponent('Forbidden: El usuario no tiene permiso son este rol')
+            return res.redirect('/users/error/?error=' + encoded)
         }
         next()
     }
 }
 
-export const verifyJWT = (req) => {
+export const authUser = (req, res, next) => {
     const userToken = req.cookies['jwtCookieToken']
     jwt.verify(userToken, JWT_PRIVATE_KEY, (error, credentials) => {
-        if (error) return;
-        req.user = credentials.user;
+        if (!error) {
+            req.user = credentials.user;
+        }
     });
+    
+    if (req.user && ['user', 'admin'].includes(req.user.role)) {
+        return next()
+    } else {
+        return res.redirect('/users/login')
+    }
+}
+
+export const loadUser = (req, res, next) => {
+    const userToken = req.cookies['jwtCookieToken']
+    jwt.verify(userToken, JWT_PRIVATE_KEY, (error, credentials) => {
+        if (!error) {
+            req.user = credentials.user;
+        }
+    });
+
+    next()
 }
 
 export default __dirname;

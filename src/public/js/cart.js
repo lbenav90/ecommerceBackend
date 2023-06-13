@@ -7,12 +7,37 @@ const deleteFromCart = async (event) => {
 
     Toastify({
         text: (response.status === 'success')? 'Producto borrado' : 'Hubo un error',
-        duration: 3000
+        duration: 1000
     }).showToast()
 
-    location.reload()
+    setTimeout(() => {
+        location.reload()
+    }, 1000)
 }
 
 document.querySelectorAll('.product-data button').forEach(button => {
     button.onclick = deleteFromCart
 })
+
+document.querySelector('.purchase-button').onclick = async (event) => {
+    const cid = event.target.id
+    
+    let result = await axios.post(`http://localhost:8080/api/carts/${cid}/purchase`)
+    let response = await result.data
+
+    if (response.status === 'error') {
+        Toastify({
+            text: 'Hubo un error',
+            duration: 1500
+        }).showToast()
+    } else {
+        Toastify({
+            text: (response.invalid.length === 0)? 'Compra realizada' : 'Stock insuficiente para ciertos productos',
+            duration: 1500
+        }).showToast()
+    }
+
+    setTimeout(() => {
+        location.reload()
+    }, 1500)
+}

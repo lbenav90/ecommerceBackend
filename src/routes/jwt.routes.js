@@ -1,21 +1,16 @@
 import { Router } from "express";
-import { createHash, generateJWToken, isValidPassword } from "../../utils.js";
+import { createHash, generateJWToken, isValidPassword } from '../utils.js';
 import passport from "passport";
-import userModel from "../dao/db/models/users.js";
-
-import program from '../../process.js';
-
-const CartModule = program.opts().system === 'database'? await import('../dao/db/cart.services.js') : await import('../dao/filesystem/cart.services.js');
-const CartService = CartModule.default
+import { cManager, uManager } from "../services/factory.js";
 
 const router = Router();
-const cManager = CartService.getInstance();
 
 // Register
 router.post('/register', async (req, res) => {
     const { first_name, last_name, email, age, password, confirm } = req.body;
+
     try {
-        const exists = await userModel.findOne({ email });
+        const exists = await uManager.getByEmail(email);
 
         if (exists) {
             console.log('El usuario ya existe')
@@ -28,7 +23,7 @@ router.post('/register', async (req, res) => {
         }
         
         const cart = await cManager.addCart();
-        
+
         if (cart.status === 'error') { 
             console.log('Error del servidor creando el carrito')
             return res.status(500).send({ status:'error', msg: 'Error del servidor creando el carrito, reintente' })
@@ -45,7 +40,7 @@ router.post('/register', async (req, res) => {
             loggedBy: 'login'
         }
 
-        const result = await userModel.create(user);
+        const result = await uManager.create(user);
 
         return res.status(201).send({ status:'success', msg: 'Usuario creado', user: result })
 
@@ -59,17 +54,17 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = await userModel.findOne({ email: email })
+        const user = await uManager.getByEmail(email);
         console.log('Usuario encontrado: \n' + user);
 
         if (!user) {
             console.warn("User not found with username: " + email);
-            res.status(204).send({ status: 'error', msg: 'Usuario no encontrado con username:' + email })
+            return res.status(400).send({ status: 'error', msg: 'Usuario no encontrado con username:' + email })
         }
-        
+
         if (!isValidPassword(user, password)) {
             console.warn("Invalid credentials with username: " + email);
-            res.status(204).send({ status: 'error', msg: 'El usuario y la contrseña no coinciden' })
+            return res.status(400).send({ status: 'error', msg: 'El usuario y la contrseña no coinciden' })
         }
 
         const tokenUser =  {
@@ -119,7 +114,7 @@ router.get('/githubcallback', passport.authenticate('github', { failureRedirect:
         httpOnly: true
     })
 
-    res.redirect('/users')
+    res.redirect('/users/current')
 })
 
 router.get('/error', (req, res) =>{

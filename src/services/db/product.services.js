@@ -1,11 +1,11 @@
 import productModel from "./models/products.js";
 
-export default class ProductService {
+export default class ProductServiceDB {
     static #instance;
 
     static getInstance() {
         if (!this.#instance) {
-            this.#instance = new ProductService()
+            this.#instance = new ProductServiceDB()
         }
         return this.#instance
     }
