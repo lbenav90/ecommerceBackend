@@ -1,15 +1,27 @@
 import { Router } from "express";
-import { authUser, loadUser } from "../utils.js";
+import { authUser, loadUser, mockProducts } from "../utils.js";
 import { cManager, pManager } from "../services/factory.js";
 
 const router = Router();
 
 router.get('/products', loadUser, async (req, res) => {   
     const products = await pManager.getProducts(req.query);
-    
-    console.log(req.user);
 
     res.render('products', { 
+        products: products.docs,
+        user: req.user,
+        title: 'Productos',
+        prev: products.prevLink,
+        next: products.nextLink
+    })
+})
+
+router.get('/mockingproducts', loadUser, (req, res) => {
+    const { page } = req.query
+
+    const products = mockProducts(100, page && parseInt(page));
+
+    res.render('products', {
         products: products.docs,
         user: req.user,
         title: 'Productos',

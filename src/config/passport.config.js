@@ -34,12 +34,9 @@ const initializePassport = () => {
     }, async (accessToken, refreshToken, profile, done) => {
         try {
             let user = await uManager.getByEmail(profile._json.email)
+
             if (!user) {
                 const cart = await cManager.addCart();
-
-                if (cart.status === 'error') { 
-                    return done(null, false)
-                }
 
                 let newUser = {
                     first_name: profile._json.name || '',
@@ -52,7 +49,8 @@ const initializePassport = () => {
                     loggedBy: 'github'
                 }
 
-                let result = uManager.create(newUser)
+                let result = await uManager.create(newUser)
+
                 done(null, result)
             } else {
                 done(null, user)

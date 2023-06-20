@@ -4,9 +4,15 @@ import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
 import passport from "passport";
 import config from "./config/config.js";
+import { faker } from "@faker-js/faker";
+import program from './process.js';
+import { log } from "console";
+
+const PORT = program.opts().p
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+faker.locale = 'es';
 
 export function createCode() {
     return String(Number(new Date())) + Math.random().toString(36).slice(2)
@@ -105,6 +111,38 @@ export const loadUser = (req, res, next) => {
     });
 
     next()
+}
+
+const mocked = []
+
+export const mockProducts = (number, page = 1) => {
+    if (mocked.length == 0) {
+        for (let i = 0; i < number; i++) {
+            mocked.push({
+                title: faker.commerce.productName(),
+                _id: faker.database.mongodbObjectId(),
+                description: faker.commerce.productDescription(),
+                price: parseFloat(faker.commerce.price()),
+                stock: parseInt(faker.random.numeric(2)),
+                category: faker.commerce.department(),
+                active: Math.random() >= 0.95? false: true
+            })
+        }
+    }
+
+    let realPage = page;
+
+    page < 1 && (realPage = 1);
+    page > Math.floor(mocked.length / 10) + 1 && (realPage = Math.floor(mocked.length / 10) + 1)
+
+    const products = {
+        status: 'success',
+        docs: mocked.slice(10 * (realPage - 1), 10 * realPage),
+        prevLink: page === 1? null : `http://localhost:${PORT}/mockingproducts?page=${realPage - 1}`,
+        nextLink: page === Math.floor(mocked.length / 10)? null : `http://localhost:${PORT}/mockingproducts?page=${realPage + 1}`
+    }
+    
+    return products;
 }
 
 export default __dirname;

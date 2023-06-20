@@ -52,9 +52,15 @@ app.use('/api/products', productRoutes);
 app.use('/api/carts', cartRoutes);
 app.use('/api/jwt', jwtRouter);
 
+import errorHandler from './src/services/errors/error-middleware.js';
+
+// Error handling middleware
+app.use(errorHandler);
+
 import program from './src/process.js';
 
 const PORT = program.opts().p
+
 app.listen(PORT, () => {
     console.log(`Server live, listining on port ${PORT}`);
 })

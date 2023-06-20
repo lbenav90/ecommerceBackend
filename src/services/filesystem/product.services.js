@@ -1,5 +1,7 @@
 import fs from 'fs';
 import __dirname, { checkType } from '../../utils.js';
+import CustomError from '../errors/custom-error.js';
+import EErrors from '../errors/errors.js';
 
 export default class ProductServiceFile {
     static #instance;
@@ -15,6 +17,7 @@ export default class ProductServiceFile {
         this.#fileSystem = fs;
 
         this.productKeys = {
+            '_id': 'integer',
             'title': 'string', 
             'description': 'string', 
             'price': 'float', 
@@ -48,20 +51,35 @@ export default class ProductServiceFile {
 
             return { status: 'success', data: this.#products };
         } catch (error) {
-            console.error(`Error consultando los productos por archivo, valide el archivo: ${this.#dirPath}, detalle del error: ${error}`);
-            throw Error(`Error consultando los productos por archivo, valide el archivo: ${this.#dirPath}, detalle del error: ${error}`);
+            CustomError.createError({
+                name: "FileSystem Error",
+                cause: generateErrorMessage(EErrors.FILESYSTEM_ERROR, { filepath: this.#filePath }),
+                message: "Error fetching products from files",
+                code: EErrors.FILESYSTEM_ERROR
+            })
         }
     }
 
     async addProduct(product) {
+        if (!product || typeof(product) !== 'object') {
+            CustomError.createError({
+                name: "Incomplete parameters",
+                cause: generateErrorMessage(EErrors.INCOMPLETE_PARAMETERS, { need: 'product', got: product}),
+                message: "Missing product infomration when adding new product",
+                code: EErrors.INCOMPLETE_PARAMETERS
+            })
+        }
+
         const productKeys = Object.keys(product).sort();
 
         // Check if product has the correct number of attributes 
-        if (productKeys.length != Object.keys(this.productKeys).length) {
-            return { 
-                status: 'error', 
-                msg: "Incorrect number of attributes. Must have the attributes [title, description, price, thumbnail, code, stock, status, category]"
-            }
+        if (productKeys.length !== Object.keys(this.productKeys).length) {
+            CustomError.createError({
+                name: "Invalid product information",
+                cause: generateErrorMessage(EErrors.INVALID_PRODUCT_INFORMATION, { detail: 'Incorrect number of attributes'}),
+                message: "Incorrect number of attributes in new product information",
+                code: EErrors.INVALID_PRODUCT_INFORMATION
+            })
         }
 
         let check;
@@ -69,24 +87,33 @@ export default class ProductServiceFile {
         for (let key of productKeys) {
             // Check that the attributes have the correct names
             if (!Object.keys(this.productKeys).includes(key)){
-                return {
-                    status: 'error', 
-                    msg: `The product attribute '${key}' is not valid`
-                };
+                CustomError.createError({
+                    name: "Invalid product information",
+                    cause: generateErrorMessage(EErrors.INVALID_PRODUCT_INFORMATION, { detail: `The product attribute '${key}' is not valid`}),
+                    message: "Invalid attribute name",
+                    code: EErrors.INVALID_PRODUCT_INFORMATION
+                })
             }
 
             if (product[key] === '') {
-                return {
-                    status: 'error', 
-                    msg: `The product attribute '${key}' cannot be empty`
-                };
+                CustomError.createError({
+                    name: "Invalid product information",
+                    cause: generateErrorMessage(EErrors.INVALID_PRODUCT_INFORMATION, { detail: `The product attribute '${key}' cannot be empty`}),
+                    message: "Empty attributes no allowed",
+                    code: EErrors.INVALID_PRODUCT_INFORMATION
+                })
             }
             
             // Check that the attributes have the correct types
             check = checkType(product, key, this.productKeys);
 
             if (check.status == 'error') {
-                return check;
+                CustomError.createError({
+                    name: "Invalid product information",
+                    cause: generateErrorMessage(EErrors.INVALID_PRODUCT_INFORMATION, { detail: check.msg }),
+                    message: "Incorrect attribute type",
+                    code: EErrors.INVALID_PRODUCT_INFORMATION
+                })
             }
         }
         
@@ -99,45 +126,43 @@ export default class ProductServiceFile {
             const codes = this.#products.map(product => product.code);
 
             if (codes.includes(code)) {
-                return {
-                    status: 'error', 
-                    msg: "Code already exists"
-                };
+                CustomError.createError({
+                    name: "Invalid product information",
+                    cause: generateErrorMessage(EErrors.INVALID_PRODUCT_INFORMATION, { detail: "Code already exists" }),
+                    message: "Incorrect attribute type",
+                    code: EErrors.INVALID_PRODUCT_INFORMATION
+                })
             }
         }
      
         // Get the maximum id value in the products. In case they are not sorted.
-        const max_id = this.#products.length === 0? 0: this.#products.sort((p1, p2) => p1.id > p2.id? -1: 1)[0].id;
+        const max_id = this.#products.length === 0? 1 : this.#products.sort((p1, p2) => p1._id > p2._id? -1: 1)[0]._id;
 
         try {
-            this.#products.push({ id: max_id + 1, ...product })
+            this.#products.push({ _id: max_id + 1, ...product })
             await this.#fileSystem.promises.writeFile(this.#filePath, JSON.stringify(this.#products))
-            return {
-                status: 'success',
-                msg: 'Product added successfully'
-            }
+            return { status: 'success', msg: 'Product added successfully' }
         } catch (error) {
-            return {
-                status: 'error',
-                msg: `Something went wrong while adding the product: ${error}`
-            }
+            CustomError.createError({
+                name: "FileSystem Error",
+                cause: generateErrorMessage(EErrors.FILESYSTEM_ERROR, { filepath: this.#filePath }),
+                message: "Error adding nwe product in files",
+                code: EErrors.FILESYSTEM_ERROR
+            })
         }
     }
     
     async getProductById(id) {
-        // Check if id is given
-        if (!id && id != 0) {
-            return { status: 'error', msg: "No id given"}
+        if (!id) {
+            CustomError.createError({
+                name: "Incomplete parameters",
+                cause: generateErrorMessage(EErrors.INCOMPLETE_PARAMETERS, { need: 'product id', got: id}),
+                message: "Missing product id when fetching product",
+                code: EErrors.INCOMPLETE_PARAMETERS
+            })
         }
 
         await this.getProducts();
-
-        if (this.#products.length === 0) {
-            return { 
-                status: 'error', 
-                msg: 'No products added'
-            };
-        }
 
         const selected = this.#products.filter(product => product.id === id);
 
@@ -148,28 +173,34 @@ export default class ProductServiceFile {
                 product: selected[0]
             }
         } else {
-            return { 
-                status: 'error', 
-                msg: 'Id not found'
-            };
+            CustomError.createError({
+                name: "Invalid ID",
+                cause: generateErrorMessage(EErrors.INVALID_ID, { invalid: id }),
+                message: "Invalid id given for product",
+                code: EErrors.INVALID_ID
+            })
         }
     }
     async updateProduct(id, update) {
         // Check if the parameters are given
-        if (!id || !update) {
-            return {
-                status: 'error',
-                msg: 'Id and Update object must be provided'
-            }
+        if (!id || !update || typeof(update) !== 'object') {
+            CustomError.createError({
+                name: "Incomplete parameters",
+                cause: generateErrorMessage(EErrors.INCOMPLETE_PARAMETERS, { need: 'product id and update information', got: `${id} and ${update}`}),
+                message: "Missing udpate information when updating product",
+                code: EErrors.INCOMPLETE_PARAMETERS
+            })
         }
 
         const updatedKeys = Object.keys(update);
 
-        if (updatedKeys.includes('id')){
-            return {
-                status: 'error',
-                msg: 'Ids cannot be manually changed'
-            }
+        if (updatedKeys.includes('_id')){
+            CustomError.createError({
+                name: "Invalid update",
+                cause: generateErrorMessage(EErrors.INVALID_UPDATE, { field: '_id' }),
+                message: "Tried to update auto field",
+                code: EErrors.INVALID_UPDATE
+            })
         }
 
         let check;
@@ -177,45 +208,46 @@ export default class ProductServiceFile {
 
         for (let key of updatedKeys) {
             if (!productKeys.includes(key)) {
-                return {
-                    status: 'error',
-                    msg: `The update field '${key}' is not a part of the product`
-                }
+                CustomError.createError({
+                    name: "Invalid product information",
+                    cause: generateErrorMessage(EErrors.INVALID_PRODUCT_INFORMATION, { detail: `The update field '${key}' is not a part of the product` }),
+                    message: "Incorrect attribute type",
+                    code: EErrors.INVALID_PRODUCT_INFORMATION
+                })
             }
             // Check that the attributes have the correct types
             check = checkType(update, key, this.productKeys);
 
             if (check.status == 'error') {
-                return check;
+                CustomError.createError({
+                    name: "Invalid product information",
+                    cause: generateErrorMessage(EErrors.INVALID_PRODUCT_INFORMATION, { detail: check.msg}),
+                    message: "Incorrect attribute type",
+                    code: EErrors.INVALID_PRODUCT_INFORMATION
+                })
             }
         }
 
-       await this.getProducts();
+        await this.getProducts();
 
-        if (this.#products.length === 0) {
-            // Might be useless since the id check is gonna fail anyway
-            return {
-                status: 'error',
-                msg: 'No products added'
-            }
-        }
-
-        const selected = this.#products.filter(product => product.id === id);
+        const selected = this.#products.filter(product => product._id === id);
         let product;
         
         // Check if the id is a valid one
         if (selected.length !== 0) {
             product = selected[0];
         } else {
-            return {
-                status: 'error',
-                msg: 'Id not found'
-            }
+            CustomError.createError({
+                name: "Invalid ID",
+                cause: generateErrorMessage(EErrors.INVALID_ID, { invalid: id }),
+                message: "Invalid id given for product",
+                code: EErrors.INVALID_ID
+            })
         }
 
         try {
             console.log(this.#products.filter(p => p.id !== id).push({...product, ...update}));
-            this.#products = this.#products.filter(p => p.id !== id)
+            this.#products = this.#products.filter(p => p._id !== id)
             this.#products.push({...product, ...update})
 
             await fs.promises.writeFile(this.#filePath, JSON.stringify(this.#products));
@@ -224,15 +256,22 @@ export default class ProductServiceFile {
                 msg: 'Product updated successfully'
             }
         } catch (error) {
-            return {
-                status: 'error',
-                msg: `Something went wrong while saving the changes: ${error}`
-            }
+            CustomError.createError({
+                name: "FileSystem Error",
+                cause: generateErrorMessage(EErrors.FILESYSTEM_ERROR, { filepath: this.#filePath }),
+                message: "Error adding new product in files",
+                code: EErrors.FILESYSTEM_ERROR
+            })
         }
     }
     async deleteProduct(id) {
-        if (!id && id != 0) {
-            throw new Error('No Id Given');
+        if (!id) {
+            CustomError.createError({
+                name: "Incomplete parameters",
+                cause: generateErrorMessage(EErrors.INCOMPLETE_PARAMETERS, { need: 'product id', got: id}),
+                message: "Missing product id when deleting product",
+                code: EErrors.INCOMPLETE_PARAMETERS
+            })
         }
 
         await this.getProducts();
@@ -240,10 +279,12 @@ export default class ProductServiceFile {
         const newProducts = this.#products.filter((product) => product.id != id);
 
         if (newProducts.length == this.#products.length) {
-            return {
-                status: 'error',
-                msg: 'Id not found'
-            }
+            CustomError.createError({
+                name: "Invalid ID",
+                cause: generateErrorMessage(EErrors.INVALID_ID, { invalid: id }),
+                message: "Invalid id given for product",
+                code: EErrors.INVALID_ID
+            })
         }
         
         try {
@@ -254,11 +295,12 @@ export default class ProductServiceFile {
                 msg: 'Item deleted succesfully'
             }
         } catch (error) {
-            return {
-                status: 'error',
-                msg: `Something went wrong while deleting product: ${error}`
-            }
+            CustomError.createError({
+                name: "FileSystem Error",
+                cause: generateErrorMessage(EErrors.FILESYSTEM_ERROR, { filepath: this.#filePath }),
+                message: "Error deleting product in files",
+                code: EErrors.FILESYSTEM_ERROR
+            })
         }
-        
     }
 };

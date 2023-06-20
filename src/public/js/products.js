@@ -1,8 +1,12 @@
 const addToCart = async (event) => {
     const productCode = event.target.id.split('-')[0]
-    const cartCode = document.querySelector('#cartId').value
+    const cart = document.querySelector('#cartId')
 
-    let result = await axios.post(`http://localhost:8080/api/carts/${cartCode}/products/${productCode}`)
+    if (!cart) {
+        location.replace('/users/login')
+    }
+
+    let result = await axios.post(`http://localhost:8080/api/carts/${cart.value}/products/${productCode}`)
     let response = await result.data
 
     Toastify({

@@ -17,12 +17,12 @@ form.addEventListener('submit', event => {
         if(result.status === 201){
             result.json()
             .then(json => {
-                console.log(json);
-                console.log('Cookies generadas: \n' + document.cookie);
                 window.location.replace('/users/current');
             })
-        } else if(result.status === 401){
+        } else if(result.status === 400){
             alert("Login invalido!!")
+            document.querySelector('#password-field').value = "";
+            document.querySelector('#password-field').focus();
         } 
     })
 })

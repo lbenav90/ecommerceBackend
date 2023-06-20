@@ -19,30 +19,36 @@ switch (program.opts().system) {
         };
         await mongoInstance();
         
-        const { default: CartServiceDB } = await import('./db/cart.services.js')
         const { default: ProductSeviceDB } = await import('./db/product.services.js')
-        const { default: UserSeviceDB } = await import('./db/users.services.js')
-        const { default: TicketSeviceDB } = await import('./db/ticket.services.js')
-
-        cManager = CartServiceDB.getInstance();
         pManager = ProductSeviceDB.getInstance();
+
+        const { default: CartServiceDB } = await import('./db/cart.services.js')
+        cManager = CartServiceDB.getInstance();
+
+        const { default: UserSeviceDB } = await import('./db/users.services.js')
         uManager = UserSeviceDB.getInstance();
+
+        const { default: TicketSeviceDB } = await import('./db/ticket.services.js')
         tManager = TicketSeviceDB.getInstance();
 
-        console.log("Cart and Product managers loaded");
+
+        console.log("Managers loaded");
         break;
     case 'files':
-        const { default: CartServiceFile } = await import('./filesystem/cart.services.js')
         const { default: ProductSeviceFile } = await import('./filesystem/product.services.js')
-        const { default: UserSeviceFile } = await import('./filesystem/users.services.js')
-        const { default: TicketSeviceFile } = await import('./filesystem/ticket.services.js')
-        
-        cManager = CartServiceFile.getInstance();
         pManager = ProductSeviceFile.getInstance();
+
+        const { default: CartServiceFile } = await import('./filesystem/cart.services.js')
+        cManager = CartServiceFile.getInstance();
+
+        const { default: UserSeviceFile } = await import('./filesystem/users.services.js')
         uManager = UserSeviceFile.getInstance();
+
+        const { default: TicketSeviceFile } = await import('./filesystem/ticket.services.js')
         tManager = TicketSeviceFile.getInstance();
         
-        console.log("Cart and Product managers loaded");
+        
+        console.log("Managers loaded");
         break;
 
     default:

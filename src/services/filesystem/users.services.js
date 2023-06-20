@@ -1,5 +1,8 @@
 import fs from 'fs';
 import __dirname from '../../utils.js';
+import EErrors from '../errors/errors.js';
+import generateErrorMessage from '../errors/error-messages.js';
+import CustomError from '../errors/custom-error.js';
 
 export default class UserServiceFile {
     static #instance;
@@ -29,6 +32,15 @@ export default class UserServiceFile {
     }
 
     getByEmail = async (email) => {
+        if (!email) {
+            CustomError.createError({
+                name: "Incomplete parameters",
+                cause: generateErrorMessage(EErrors.INCOMPLETE_PARAMETERS, { need: 'email', got: email}),
+                message: "Missing parameters fetching user by email",
+                code: EErrors.INCOMPLETE_PARAMETERS
+            })
+        }
+
         try {
             await this.#setDirectory();
 
@@ -38,11 +50,24 @@ export default class UserServiceFile {
             const selected = this.#users.filter(user => user.email === email)
             return selected.length === 0? null: selected[0]
         } catch (error) {
-            console.error(`Error consultando los usuarios por archivo, valide el archivo: ${this.#dirPath}, detalle del error: ${error}`);
-            throw Error(`Error consultando los usuarios por archivo, valide el archivo: ${this.#dirPath}, detalle del error: ${error}`);
+            CustomError.createError({
+                name: "FileSystem Error",
+                cause: generateErrorMessage(EErrors.FILESYSTEM_ERROR, { filepath: this.#filePath }),
+                message: "Error fetching user from files",
+                code: EErrors.FILESYSTEM_ERROR
+            })
         }
     }
     getById = async (id) => {
+        if (!id) {
+            CustomError.createError({
+                name: "Incomplete parameters",
+                cause: generateErrorMessage(EErrors.INCOMPLETE_PARAMETERS, { need: 'id', got: id}),
+                message: "Missing parameters fetching user by id",
+                code: EErrors.INCOMPLETE_PARAMETERS
+            })
+        }
+
         try {
             await this.#setDirectory();
 
@@ -52,11 +77,24 @@ export default class UserServiceFile {
             const selected = this.#users.filter(user => user.id === id)
             return selected.length === 0? null: selected[0]
         } catch (error) {
-            console.error(`Error consultando los usuarios por archivo, valide el archivo: ${this.#dirPath}, detalle del error: ${error}`);
-            throw Error(`Error consultando los usuarios por archivo, valide el archivo: ${this.#dirPath}, detalle del error: ${error}`);
+            CustomError.createError({
+                name: "FileSystem Error",
+                cause: generateErrorMessage(EErrors.FILESYSTEM_ERROR, { filepath: this.#filePath }),
+                message: "Error fetching user from files",
+                code: EErrors.FILESYSTEM_ERROR
+            })
         }
     }
     create = async (user) => {
+        if (!user || typeof(user) !== 'object') {
+            CustomError.createError({
+                name: "Incomplete parameters",
+                cause: generateErrorMessage(EErrors.INCOMPLETE_PARAMETERS, { need: 'user', got: user}),
+                message: "Missing user information when trying to create user",
+                code: EErrors.INCOMPLETE_PARAMETERS
+            })
+        }
+
         try {
             await this.#setDirectory();
 
@@ -74,8 +112,12 @@ export default class UserServiceFile {
                 return { status: 'error', msg: 'Email ya se encuentra asignado a un usuario' }
             }
         } catch (error) {
-            console.error(`Error consultando los usuarios por archivo, valide el archivo: ${this.#dirPath}, detalle del error: ${error}`);
-            throw Error(`Error consultando los usuarios por archivo, valide el archivo: ${this.#dirPath}, detalle del error: ${error}`);
+            CustomError.createError({
+                name: "FileSystem Error",
+                cause: generateErrorMessage(EErrors.FILESYSTEM_ERROR, { filepath: this.#filePath }),
+                message: "Error creating user in files",
+                code: EErrors.FILESYSTEM_ERROR
+            })
         }
     }
 }
