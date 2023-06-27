@@ -1,3 +1,4 @@
+import logger from "../../config/logger.js";
 import CustomError from "../errors/custom-error.js";
 import generateErrorMessage from "../errors/error-messages.js";
 import EErrors from "../errors/errors.js";
@@ -116,8 +117,8 @@ export default class CartServiceDB {
         for (const product of products) {
             check = await pManager.getProductById(product._id)
             if (!check) {
-                console.log(notValid);
                 notValid = product.product;
+                logger.warning(`Invalid product with id ${product._id}`);
             }
         }
         

@@ -1,8 +1,10 @@
 import express from 'express';
 import __dirname from './src/utils.js';
-
 import config from './src/config/config.js';
 import session from 'express-session';
+import program from './src/process.js';
+
+const PORT = program.opts().p
 
 const app = express();
 
@@ -23,6 +25,7 @@ app.use(cookieParser(config.cookieSecret))
 
 import passport from 'passport';
 import initializePassport from './src/config/passport.config.js';
+import logger, { addLogger } from './src/config/logger.js';
 
 // Passport setup
 initializePassport();
@@ -33,6 +36,7 @@ app.use(session({
 }))
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(addLogger);
 
 // Set the static file location
 app.use('/static', express.static(__dirname + '/public'))
@@ -57,10 +61,8 @@ import errorHandler from './src/services/errors/error-middleware.js';
 // Error handling middleware
 app.use(errorHandler);
 
-import program from './src/process.js';
 
-const PORT = program.opts().p
 
 app.listen(PORT, () => {
-    console.log(`Server live, listining on port ${PORT}`);
+    logger.info(`Server live, listining on port ${PORT}`);
 })

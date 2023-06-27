@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authUser, loadUser, mockProducts } from "../utils.js";
 import { cManager, pManager } from "../services/factory.js";
+import logger from "../config/logger.js";
 
 const router = Router();
 
@@ -46,6 +47,16 @@ router.get('/',  (req, res) => {
 
 router.get('/private', authUser, (req, res) => {
     res.send('Si estas viendo esto, estas autorizado')
+})
+
+router.get('/loggerTest', (req, res) => {
+    logger.debug('Debug logger test')
+    logger.info('Info logger test')
+    logger.warning('Warning test')
+    logger.error('Error logger test')
+    logger.fatal('Fatal logger test')
+
+    res.redirect('/')
 })
 
 export default router;

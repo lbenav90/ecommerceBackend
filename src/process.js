@@ -11,10 +11,6 @@ const assignCommand = () => {
         .option('--system <system>', 'Sistema de persistencia', 'database')
     
     program.parse() //Parsea los comandos y valida si son correctos.
-    
-    console.log("Options: ", program.opts());
-    console.log("Mode Option: ", program.opts().mode);
-    console.log("Remaining arguments: ", program.args);
 }
 
 !program && assignCommand()

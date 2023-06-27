@@ -2,6 +2,7 @@ import { Router } from "express";
 import { createHash, generateJWToken, isValidPassword } from '../utils.js';
 import passport from "passport";
 import { cManager, uManager } from "../services/factory.js";
+import logger from "../config/logger.js";
 
 const router = Router();
 
@@ -12,12 +13,12 @@ router.post('/register', async (req, res) => {
     const exists = await uManager.getByEmail(email);
 
     if (exists) {
-        console.log('El usuario ya existe')
+        logger.warning(`El usuario ${email} ya existe en la base de datos`)
         return res.status(400).send({ status: 'error', msg: 'El email ingresado ya existe en la base de datos' })
     }
     
     if (password !== confirm) {
-        console.log('Las contraseñas no coinciden')
+        logger.warning(`Las contraseñas no coinciden para el usuario ${email}`)
         return res.status(400).send({ status: 'error', msg: 'Las contraseñas no coinciden' })
     }
     
@@ -64,14 +65,14 @@ router.post('/login', async (req, res) => {
     }
 
     const access_token = generateJWToken(tokenUser);
-    console.log(access_token);
-
+    logger.info(`JWT token generated for user: ${tokenUser}`);
+    
     // Cookie setup
     res.cookie('jwtCookieToken', access_token, {
         maxAge: 600000,
         httpOnly: true
     })
-
+    
     res.status(201).send({ status: 'success', msg: 'Login exitoso' })
 })
 
@@ -80,7 +81,7 @@ router.get('/github', passport.authenticate('github', { scope: ['user:email'] })
 
 router.get('/githubcallback', passport.authenticate('github', { failureRedirect: '/error' }), async (req, res) => {
     const user = req.user
-    console.log(user);
+    
     const tokenUser =  {
         name: `${user.first_name} ${user.last_name}`,
         email: user.email,
@@ -88,8 +89,9 @@ router.get('/githubcallback', passport.authenticate('github', { failureRedirect:
         cart: user.cart,
         role: user.role
     }
-
+    
     const access_token = generateJWToken(tokenUser);
+    logger.info(`JWT token generated for user: ${tokenUser}`);
     
     // Cookie setup
     res.cookie('jwtCookieToken', access_token, {

@@ -159,7 +159,7 @@ export default class CartServiceFile {
         for (const product of products) {
             check = await pManager.getProductById(product._id)
             if (!check) {
-                console.log(notValid);
+                logger.warning(`Invalid product with id ${product._id}`);
                 notValid = product.product;
             }
         }

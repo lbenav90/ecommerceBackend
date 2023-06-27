@@ -1,5 +1,6 @@
 import program from '../process.js';
 import MongoSingleton from '../config/mongodb-singleton.js';
+import logger from '../config/logger.js';
 
 // Para cambiar de persistencia
 // node src/app.js --persist files --mode dev
@@ -9,7 +10,7 @@ let cManager, pManager, uManager, tManager;
 switch (program.opts().system) {
     case 'database':
         const mongoInstance = async () => {
-            console.log("Entrando a iniciar Service para MongoDb");
+            logger.info("Entrando a iniciar Service para MongoDb");
             try {
                 await MongoSingleton.getInstance();
             } catch (error) {
@@ -32,7 +33,7 @@ switch (program.opts().system) {
         tManager = TicketSeviceDB.getInstance();
 
 
-        console.log("Managers loaded");
+        logger.info("Managers loaded");
         break;
     case 'files':
         const { default: ProductSeviceFile } = await import('./filesystem/product.services.js')
@@ -48,7 +49,7 @@ switch (program.opts().system) {
         tManager = TicketSeviceFile.getInstance();
         
         
-        console.log("Managers loaded");
+        logger.info("Managers loaded");
         break;
 
     default:

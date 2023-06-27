@@ -3,6 +3,7 @@ import jwtStrategy from 'passport-jwt';
 import GitHubStrategy from 'passport-github2';
 import { JWT_PRIVATE_KEY } from '../utils.js'
 import { cManager, uManager } from '../services/factory.js'
+import logger from "./logger.js";
 
 const JwtStrategy = jwtStrategy.Strategy;
 const ExtractJWT = jwtStrategy.ExtractJwt;
@@ -14,13 +15,13 @@ const initializePassport = () => {
             secretOrKey: JWT_PRIVATE_KEY
         },
         async (jwt_payload, done) => {
-            console.log('Entrando a passport con JWT');
+            logger.info('Entrando a passport con JWT');
             try {
-                console.log('JWT obtenido del payload');
-                console.log(jwt_payload);
+                logger.info('JWT obtenido del payload');
+                logger.info(jwt_payload);
                 return done(null, jwt_payload.user)
             } catch (error) {
-                console.error(error);
+                logger.error(error);
                 done(error)
             }
         }
@@ -77,7 +78,7 @@ const initializePassport = () => {
 
 const cookieExtractor = req => {
     let token = null;
-    console.log('Entrando al cookie extractor');
+    logger.info('Entrando al cookie extractor');
 
     req && req.cookies && (token = req.cookies['jwtCookieToken'])
 

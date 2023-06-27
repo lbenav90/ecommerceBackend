@@ -246,7 +246,6 @@ export default class ProductServiceFile {
         }
 
         try {
-            console.log(this.#products.filter(p => p.id !== id).push({...product, ...update}));
             this.#products = this.#products.filter(p => p._id !== id)
             this.#products.push({...product, ...update})
 
