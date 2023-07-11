@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { pManager } from '../services/factory.js';
+import { cManager, pManager } from '../services/factory.js';
 import { authUser, authorization } from '../utils.js';
 
 const router = Router();
@@ -10,10 +10,10 @@ router.get('/', async (req, res) => {
     res.status(200).send(products)
 });
 
-router.post('/', authUser, authorization(['admin']), async (req, res) => {
-    const added = await pManager.addProduct(req.body);
+router.post('/', authUser, authorization(['premium', 'admin']), async (req, res) => {
+    await pManager.addProduct({ ...req.body, owner: req.user._id, status: true });
 
-    res.status(200).send(added)
+    res.redirect('/products')
 });
 
 router.get('/:pid', async (req, res) => {
@@ -24,22 +24,40 @@ router.get('/:pid', async (req, res) => {
     res.status(200).send(product)
 });
 
-router.put('/:pid', authUser, authorization(['admin']), async (req, res) => {
+router.post('/:pid', authUser, authorization(['premium', 'admin']), async (req, res) => {
     const id = req.params.pid;
 
-    const updated = await pManager.updateProduct(id, req.body)
+    const update = await pManager.updateProduct(id, req.body, req.user)
+
+    if (update.status === 'success') {
+        res.redirect('/products')
+    } else {
+        res.redirect(req.header('Referer'))
+    }
+});
+
+router.put('/:pid', authUser, authorization(['premium', 'admin']), async (req, res) => {
+    const id = req.params.pid;
+
+    const updated = await pManager.updateProduct(id, req.body, req.user)
 
     res.status(200).send(updated)
 });
 
-router.delete('/:pid', authUser, authorization(['admin']), async (req, res) => {
+router.delete('/:pid', authUser, authorization(['premium', 'admin']), async (req, res) => {
     const id = req.params.pid;
 
-    const deleted = await pManager.deleteProduct(id);
+    const carts = await cManager.getAll();
+    
+    carts.data.forEach(async (cart) => {
+        if (cart.products.filter(p => p._id.equals(id)).length === 1) {
+            await cManager.updateCart(cart._id, cart.products.filter(p => !p._id.equals(id)))
+        }
+    })
+    
+    const deleted = await pManager.deleteProduct(id, req.user);
 
     res.status(200).send(deleted)
-
-    // TODO should loop over all the carts and remove any instance of this product
 });
 
 export default router;

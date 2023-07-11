@@ -3,7 +3,12 @@
     <p>{{user.name}}</p>
     <p>{{user.email}}</p>
     <p>{{user.age}}</p>
+    <p>Rol: {{user.role}}</p>
     <a href="/users/logout">Logout</a>
     <a href="/products">Ver productos</a>
+    <a href="/users/create">Crear producto</a>
     <a href="/cart">Ver carrito</a>
+    <form action="/api/users/premium/{{user._id}}" method="post">
+        <button>Cambiar rol</button>
+    </form>
 </div>

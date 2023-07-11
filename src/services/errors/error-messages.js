@@ -22,6 +22,8 @@ const generateErrorMessage = (code, details) => {
             return `Authorization fail: ${details.detail}`
         case EErrors.EMPTY_CART_ERROR:
             return `Cannot perform this action on an empty cart`
+        case EErrors.INVALID_USER:
+            return `User with email ${details.email} does not exist`
         default:
             return 'Unhandled Error'
     }

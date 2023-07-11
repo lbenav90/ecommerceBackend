@@ -13,5 +13,6 @@ export default {
     mongoUrl: process.env.MONGO_URL,
     cookieSecret: process.env.COOKIE_SECRET,
     JWTPrivateKey: process.env.JWT_PRIVATE_KEY,
-    sessionSecret: process.env.SESSION_SECRET
+    sessionSecret: process.env.SESSION_SECRET,
+    gmailPass: process.env.GMAIL_PASS
 };

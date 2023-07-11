@@ -8,8 +8,25 @@ const router = Router();
 router.get('/products', loadUser, async (req, res) => {   
     const products = await pManager.getProducts(req.query);
 
+    let owned;
+    let newProducts = products.docs.map(p => {
+
+        if (!req.user || !p.owner) {
+            owned = false
+        } else if (p.owner.equals(req.user._id)) {
+            owned = true
+        } else {
+            owned = false
+        }
+
+        return {
+            ...p._doc,
+            owner: owned
+        }
+    })
+
     res.render('products', { 
-        products: products.docs,
+        products: newProducts,
         user: req.user,
         title: 'Productos',
         prev: products.prevLink,
@@ -22,8 +39,24 @@ router.get('/mockingproducts', loadUser, (req, res) => {
 
     const products = mockProducts(100, page && parseInt(page));
 
+    let owned;
+    let newProducts = products.docs.map(p => {
+        if (!req.user) {
+            owned = false
+        } else if (p.owner.equals(req.user._id)) {
+            owned = true
+        } else {
+            owned = false
+        }
+        
+        return {
+            ...p._doc,
+            owner: owned
+        }
+    })
+
     res.render('products', {
-        products: products.docs,
+        products: newProducts,
         user: req.user,
         title: 'Productos',
         prev: products.prevLink,

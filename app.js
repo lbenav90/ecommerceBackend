@@ -46,6 +46,7 @@ import productRoutes from './src/routes/products.routes.js';
 import cartRoutes from './src/routes/cart.routes.js';
 import userViewsRouter from './src/routes/user.views.routes.js';  
 import jwtRouter from './src/routes/jwt.routes.js';
+import userRouter from './src/routes/user.routes.js'
 
 // Views Routers
 app.use('/', viewsRouter)
@@ -55,13 +56,12 @@ app.use('/users', userViewsRouter);
 app.use('/api/products', productRoutes);
 app.use('/api/carts', cartRoutes);
 app.use('/api/jwt', jwtRouter);
+app.use('/api/users', userRouter)
 
 import errorHandler from './src/services/errors/error-middleware.js';
 
 // Error handling middleware
 app.use(errorHandler);
-
-
 
 app.listen(PORT, () => {
     logger.info(`Server live, listining on port ${PORT}`);

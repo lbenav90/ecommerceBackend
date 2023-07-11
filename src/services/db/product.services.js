@@ -98,7 +98,7 @@ export default class ProductServiceDB {
             })
         }
     }
-    updateProduct = async (id, update) => {
+    updateProduct = async (id, update, user) => {
         if (!id || !update || typeof(update) !== 'object') {
             CustomError.createError({
                 name: "Incomplete parameters",
@@ -108,19 +108,30 @@ export default class ProductServiceDB {
             })
         }
 
+        
         try {
+            const product = await productModel.findOne({ _id: id })
+
+            console.log(product.owner);
+            console.log(product.owner.equals(user._id));
+            
+            if (user.role !== 'admin' && product.owner && !product.owner.equals(user._id)) {
+                return { status: 'error', msg: 'No se puede modificar un producto que no le pertenece' }
+            }
+
             const upd = await productModel.updateOne({ _id: id }, update)
+            console.log(upd);
             return { status: 'success', data: upd }
         } catch (error) {
             CustomError.createError({
                 name: "MongoDB Error",
-                cause: generateErrorMessage(EErrors.MONGODB_ERROR),
+                cause: generateErrorMessage(EErrors.MONGODB_ERROR, { error: error }),
                 message: "Error updating product in MongoDB",
                 code: EErrors.MONGODB_ERROR
             })
         }
     }
-    deleteProduct = async (id) => {
+    deleteProduct = async (id, user) => {
         if (!id) {
             CustomError.createError({
                 name: "Incomplete parameters",
@@ -131,6 +142,12 @@ export default class ProductServiceDB {
         }
 
         try {
+            const product = await productModel.findOne({ _id: id })
+
+            if (user.role !== 'admin' && product.owner && !product.owner.equals(user._id)) {
+                return { status: 'error', msg: 'No se puede borrar un producto que no le pertenece' }
+            }
+
             const del = await productModel.findByIdAndDelete(id)
             return { status: 'success', data: del }
         } catch (error) {

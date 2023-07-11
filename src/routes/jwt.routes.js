@@ -57,6 +57,7 @@ router.post('/login', async (req, res) => {
     }
 
     const tokenUser =  {
+        _id: user._id,
         name: `${user.first_name} ${user.last_name}`,
         email: user.email,
         age: user.age,
@@ -66,7 +67,7 @@ router.post('/login', async (req, res) => {
 
     const access_token = generateJWToken(tokenUser);
     logger.info(`JWT token generated for user: ${tokenUser}`);
-    
+
     // Cookie setup
     res.cookie('jwtCookieToken', access_token, {
         maxAge: 600000,

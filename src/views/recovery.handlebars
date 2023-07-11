@@ -1,0 +1,20 @@
+<div id="root">
+    <h1>Solicitar reestablecer contraseña</h1>
+    <form id="reset-request-form" action="/users/recovery" method="post">
+        <h3>¿Para qué cuenta desea reestablecer la contraseña?</h3>
+        <p>Recibirá un email con los pasos a seguir</p>
+        <div id="email-reset-request-div">
+            <label for="email">Email:</label>
+            <input type="text" name="email" id="email-field" required>
+        </div>
+        <input type="submit" value="Solicitar" />
+    </form>
+    <p>Recordé mi contraseña<a href="/users/login">Ingresar</a></p>
+    <p>No estas registrado? <a href="/users/register">Registrarme</a></p>
+    {{#if requested}}
+        <p style="color:red">Email para reestablecer contraseña enviado</p>
+    {{/if}}
+    {{#if expired}}
+        <p style="color:red">Link para reestablecer contraseña vencido, por favor generar nuevamente</p>
+    {{/if}}
+</div>

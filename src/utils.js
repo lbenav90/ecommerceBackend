@@ -6,7 +6,7 @@ import passport from "passport";
 import config from "./config/config.js";
 import { faker } from "@faker-js/faker";
 import program from './process.js';
-import { log } from "console";
+import nodemailer from 'nodemailer';
 
 const PORT = program.opts().p
 
@@ -95,7 +95,7 @@ export const authUser = (req, res, next) => {
         }
     });
     
-    if (req.user && ['user', 'admin'].includes(req.user.role)) {
+    if (req.user && ['user', 'admin', 'premium'].includes(req.user.role)) {
         return next()
     } else {
         return res.redirect('/users/login')
@@ -104,6 +104,7 @@ export const authUser = (req, res, next) => {
 
 export const loadUser = (req, res, next) => {
     const userToken = req.cookies['jwtCookieToken']
+
     jwt.verify(userToken, JWT_PRIVATE_KEY, (error, credentials) => {
         if (!error) {
             req.user = credentials.user;
@@ -125,7 +126,8 @@ export const mockProducts = (number, page = 1) => {
                 price: parseFloat(faker.commerce.price()),
                 stock: parseInt(faker.random.numeric(2)),
                 category: faker.commerce.department(),
-                active: Math.random() >= 0.95? false: true
+                active: Math.random() >= 0.95? false: true,
+                owner: faker.database.mongodbObjectId()
             })
         }
     }
@@ -143,6 +145,36 @@ export const mockProducts = (number, page = 1) => {
     }
     
     return products;
+}
+
+export const sendResetEmail = async (email, link) => {
+    const transport = nodemailer.createTransport({
+        service: 'gmail',
+        port: 587,
+        auth: { 
+            user: 'lnbenavides90@gmail.com',
+            pass: config.gmailPass
+        }
+    })
+
+    const result = await transport.sendMail({
+        from: 'Ecommerce',
+        to: email,
+        subject: 'Reestablecer contraseña',
+        html: `
+        <h1>Reestablecer la contraseña para el ecommerce</h1>
+
+        <div>
+            <p>Recibimos un pedido de reestablecimiento de contraseña. Para continuar con el proceso, haga click en el siguiente link:</p>
+
+            <a href="http://${link}">Reestablecer contraseña</a>
+            <p>Si no solicitó este cambio, ignore esta comunicación</p>
+        </div>
+        `,
+        attachments: []
+    })
+
+    return result
 }
 
 export default __dirname;

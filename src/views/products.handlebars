@@ -4,6 +4,7 @@
         <h2>Bienvenido {{ user.name }}!</h2>
         <a href="/users/logout">Salir</a>
         <a href="/cart">Carrito</a>
+        <a href="/users/current">Perfil</a>
         <input type="hidden" name="cartId" id="cartId" value="{{user.cart}}">
     {{else}}
         <p>No hay un usuario loggueado <a href="/users/login">Ingresar</a></p>
@@ -19,9 +20,17 @@
                         <li class="product-data price" id="{{_id}}-price">${{ price }}</li>
                         <li class="product-data stock" id="{{_id}}-stock">{{ stock }}</li>
                         <li class="product-data category" id="{{_id}}-category">Category: {{ category }}</li>
+                        {{#if owner}}
+                            <li class="product-data owner" id="{{_id}}-owner">PRODUCTO PROPIO</li>
+                        {{/if}}
                         <li class="product-data button" id="{{_id}}-button-outer">
                             {{#if status}}
-                                <button id="{{_id}}-button">Agregar al carrito</button>
+                                {{#if owner}}
+                                    <a href="/users/update?id={{_id}}"><button id="{{_id}}-update-button" class="update-button">Modificar producto</button></a>
+                                    <button id="{{_id}}-delete-button" class="delete-button">Borrar producto</button>
+                                {{else}}
+                                    <button id="{{_id}}-add-button" class="add-button">Agregar al carrito</button>
+                                {{/if}}
                             {{else}}
                                 Producto discontinuado
                             {{/if}}

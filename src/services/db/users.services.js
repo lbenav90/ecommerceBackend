@@ -1,6 +1,7 @@
 import CustomError from '../errors/custom-error.js';
 import generateErrorMessage from '../errors/error-messages.js';
 import EErrors from '../errors/errors.js';
+import tokenModel from './models/tokens.js';
 import userModel from './models/users.js'
 
 export default class UserServiceDB {
@@ -75,5 +76,31 @@ export default class UserServiceDB {
                 code: EErrors.MONGODB_ERROR
             })
         } 
+    }
+    resetPassword = async (email, password) => {
+        try {
+            await userModel.updateOne({ email: email }, { password: password })
+            await tokenModel.deleteOne({ email: email })
+        } catch (error) {
+            CustomError.createError({
+                name: "MongoDB Error",
+                cause: generateErrorMessage(EErrors.MONGODB_ERROR, { error: error }),
+                message: "Error creating user in MongoDB",
+                code: EErrors.MONGODB_ERROR
+            })
+        }
+    }
+    changeUserType = async (id, role) => {
+        try {
+            const change = await userModel.updateOne({ _id: id }, { role: role === 'user'? 'premium': 'user'})
+            return { status: 'success', data: change }
+        } catch (error) {
+            CustomError.createError({
+                name: "MongoDB Error",
+                cause: generateErrorMessage(EErrors.MONGODB_ERROR, { error: error }),
+                message: "Error creating user in MongoDB",
+                code: EErrors.MONGODB_ERROR
+            })
+        }
     }
 }

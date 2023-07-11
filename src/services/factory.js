@@ -5,7 +5,7 @@ import logger from '../config/logger.js';
 // Para cambiar de persistencia
 // node src/app.js --persist files --mode dev
 
-let cManager, pManager, uManager, tManager;
+let cManager, pManager, uManager, tManager, tkManager;
 
 switch (program.opts().system) {
     case 'database':
@@ -32,6 +32,8 @@ switch (program.opts().system) {
         const { default: TicketSeviceDB } = await import('./db/ticket.services.js')
         tManager = TicketSeviceDB.getInstance();
 
+        const { default: TokenServiceDB } = await import('./db/token.services.js')
+        tkManager = TokenServiceDB.getInstance();
 
         logger.info("Managers loaded");
         break;
@@ -48,7 +50,6 @@ switch (program.opts().system) {
         const { default: TicketSeviceFile } = await import('./filesystem/ticket.services.js')
         tManager = TicketSeviceFile.getInstance();
         
-        
         logger.info("Managers loaded");
         break;
 
@@ -56,4 +57,4 @@ switch (program.opts().system) {
         break;
 }
 
-export { cManager, pManager, uManager, tManager }
+export { cManager, pManager, uManager, tManager, tkManager }

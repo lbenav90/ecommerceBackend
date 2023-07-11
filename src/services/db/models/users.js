@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const userCollection = 'users';
+
 const userSchema = new mongoose.Schema({
     first_name: { type: String},
     last_name: { type: String },
@@ -10,7 +11,7 @@ const userSchema = new mongoose.Schema({
     cart: { type: mongoose.Schema.Types.ObjectId,
             ref: 'carts',
             required: true },
-    role: { type: String, default: 'user', enum: ['user', 'admin'] },
+    role: { type: String, default: 'user', enum: ['user', 'admin', 'premium'] },
     loggedBy: String
 })
 

@@ -8,7 +8,8 @@ const EErrors = {
     INVALID_ID: 7, // Ingreso de un ID invalido
     INVALID_UPDATE: 8, // Intenta cambiar un atributo no permitido (id)
     AUTH_ERROR: 9,
-    EMPTY_CART_ERROR: 10
+    EMPTY_CART_ERROR: 10,
+    INVALID_USER: 11
 }
 
 export default EErrors;

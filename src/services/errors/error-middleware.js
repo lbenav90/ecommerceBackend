@@ -1,3 +1,4 @@
+import logger from "../../config/logger.js";
 import EErrors from "./errors.js";
 
 const errorHandler = (error, req, res, next) => {

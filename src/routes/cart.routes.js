@@ -53,8 +53,12 @@ router.post('/:cid/products/:pid', authUser, async (req, res) => {
         })
     }
     
-    // Check of product id is valid
-    await pManager.getProductById(pid);
+    // Check if product id is valid
+    const product = await pManager.getProductById(pid);
+
+    if (product.data.owner && product.data.owner.equals(req.user._id)) {
+        return res.status(200).send({ status: 'error', msg: 'No puedes agregar tu propio producto al carrito' })
+    }
 
     const added = await cManager.addProduct(cid, pid);
 

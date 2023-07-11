@@ -1,0 +1,35 @@
+<div id="root">
+    <h1>{{title}}</h1>
+    <form id="upload-product-form" action={{action}} method='post'>
+        <div id="title-div">
+            <label for="title">Título:</label>
+            <input type="text" name="title" id="title-field" required value={{product.title}}>
+        </div>
+        <div id="description-div">
+            <label for="description">Descripción:</label>
+            <textarea name="description" id="description-field" required>{{product.description}}</textarea>
+        </div>
+        <div id="price-div">
+            <label for="price">Precio: $</label>
+            <input type="number" name="price" id="price-field" required value={{product.price}}>
+        </div>
+        <div id="thumbnail-div">
+            <label for="thumbnail">URL Imagen:</label>
+            <input type="text" name="thumbnail" id="thumbnail-field" required value={{product.thumbnail}}>
+        </div>
+        <div id="category-login-div">
+            <label for="category">Categoría:</label>
+            <input type="text" name="category" id="category-field" required value={{product.category}}>
+        </div>
+        <div id="code-login-div">
+            <label for="code">Código único:</label>
+            <input type="text" name="code" id="code-field" required value={{product.code}}>
+        </div>
+        <div id="stock-div">
+            <label for="stock">Stock:</label>
+            <input type="number" name="stock" id="stock-field" required value={{product.stock}}>
+        </div>
+        <input type="submit" value="Subir" />
+    </form>
+    <a href="/products">Ver productos</a>
+</div>
