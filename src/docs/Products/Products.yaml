@@ -1,0 +1,243 @@
+paths:
+  /api/products/:
+    get:
+      summary: Obtiene todos los productos
+      tags:
+        - Products
+      responses:
+        "200":
+          description: Se obtienen los productos satisfactoriamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Product'
+        "500":
+          description: Error obteniendo los productos de MongoDB
+    post:
+      summary: Agregar un nuevo producto
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/createProduct'
+      responses:
+        "200":
+          description: Se cargó el nuevo producto satisfactoriamente
+        "500":
+          description: Error obteniendo los productos de MongoDB
+  /api/products/{pid}:
+    get:
+      summary: Obtiene el producto del Id especificado
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a obtener
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Se realiza la búsqueda satisfactoriamente. No asegura encontrar el resultado
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Product'
+        "500":
+          description: Error buscando el producto de MongoDB
+    post:
+      summary: Actualizar de producto para usar desde un HTML form
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a actualizar
+          schema:
+            $type: String
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateProduct'
+      responses:
+        "200":
+          description: Se realiza la búsqueda satisfactoriamente. Si encuentra el producto, hace la modificación.
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Product'
+        "500":
+          description: Error actualizando el producto de MongoDB
+    put:
+      summary: Mismo comportamiento que POST
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a obtener
+          schema:
+            $type: String
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateProduct'
+      responses:
+        "200":
+          description: Se realiza la búsqueda satisfactoriamente. Si encuentra el producto, hace la modificación.
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Product'
+        "500":
+          description: Error actualizando el producto de MongoDB
+    delete:
+      summary: Borra el producto del Id especificado
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a borrar
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Se realiza la búsqueda satisfactoriamente. Si lo encuentra, lo borra
+        "500":
+          description: Error borrando el producto de MongoDB
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id: 
+          type: ObjectId
+          description: ID autogenerado por MONGO
+        title:
+          type: String
+          description: Título del producto
+        description:
+          type: String
+          description: Descripción del producto
+        price:
+          type: Number
+          description: Precio del producto
+        thumbnail:
+          type: String
+          description: URL de una imagen del producto
+        code:
+          type: String
+          description: Código único de identificación del producto
+        stock:
+          type: Number
+          description: Unidades del producto disponibles en stock
+        category:
+          type: String
+          description: Categoría a la que pertenece el producto
+        status:
+          type: Boolean
+          description: Si el producto está activo o inactivo para la venta
+        owner:
+          type: ObjectId
+          description: ID del usuario que cargó el producto
+      example:
+        _id: ObjectId("6443eef885993554c6f32072")
+        title: Gorra de Independiente
+        description: Gorra del club de futbol de Avellaneda
+        price: 2560
+        thumbnail: indepentente.com.ar/foto-gorra.jpg
+        code: wnecwecw7ex24
+        stock: 32
+        category: gorras
+        status: true
+        owner: ObjectId("6487b5689a818b1c7b89ef9a")
+  requestBodies:
+    createProduct:
+      type: object
+      properties:
+        title:
+          type: String
+          description: Título del producto
+        description:
+          type: String
+          description: Descripción del producto
+        price:
+          type: Number
+          description: Precio del producto
+        thumbnail:
+          type: String
+          description: URL de una imagen del producto
+        code:
+          type: String
+          description: Código único de identificación del producto
+        stock:
+          type: Number
+          description: Unidades del producto disponibles en stock
+        category:
+          type: String
+          description: Categoría a la que pertenece el producto
+        status:
+          type: Boolean
+          description: Si el producto está activo o inactivo para la venta
+        owner:
+          type: ObjectId
+          description: ID del usuario que cargó el producto
+      example:  
+        title: Gorra de Independiente
+        description: Gorra del club de futbol de Avellaneda
+        price: 2560
+        thumbnail: indepentente.com.ar/foto-gorra.jpg
+        code: wnecwecw7ex24
+        stock: 32
+        category: gorras
+        status: true
+        owner: ObjectId("6487b5689a818b1c7b89ef9a")
+    updateProduct:
+      type: object
+      properties:
+        title:
+          type: String
+          description: Título del producto
+        description:
+          type: String
+          description: Descripción del producto
+        price:
+          type: Number
+          description: Precio del producto
+        thumbnail:
+          type: String
+          description: URL de una imagen del producto
+        code:
+          type: String
+          description: Código único de identificación del producto
+        stock:
+          type: Number
+          description: Unidades del producto disponibles en stock
+        category:
+          type: String
+          description: Categoría a la que pertenece el producto
+        status:
+          type: Boolean
+          description: Si el producto está activo o inactivo para la venta
+        owner:
+          type: ObjectId
+          description: ID del usuario que cargó el producto
+      example:  
+        price: 3500
+
+

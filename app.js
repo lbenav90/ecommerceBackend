@@ -3,10 +3,26 @@ import __dirname from './src/utils.js';
 import config from './src/config/config.js';
 import session from 'express-session';
 import program from './src/process.js';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUiExpress from 'swagger-ui-express';
 
 const PORT = program.opts().p
 
 const app = express();
+
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.1',
+        info: {
+            title: 'Documentación de la API Benavides',
+            description: 'Descripción de las rutas disponibles en la API del ecommerce'
+        }
+    },
+    apis: [`${__dirname}/docs/**/*.yaml`]
+}
+
+const specs = swaggerJSDoc(swaggerOptions);
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 
 // Configuration to use JSON data
 app.use(express.json())

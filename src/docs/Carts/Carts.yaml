@@ -1,0 +1,261 @@
+paths:
+  /api/carts/:
+    post:
+      summary: Agregar un nuevo carrito
+      tags:
+        - Carts
+      responses:
+        "200":
+          description: Se creo el nuevo carrito satisfactoriamente
+        "500":
+          description: Error creando el carrito en MongoDB
+  /api/carts/{cid}:
+    get:
+      summary: Obtener un determinado carrito, identificado por el Id
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a obtener
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Se realizó la búsqueda satsfactoriamente. Si el Id es válido, devuelve la información requerida.
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Cart'
+        "500":
+          description: Error creando el carrito en MongoDB
+    put:
+      summary: Modificar un determinado carrito, identificado por el Id
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a modificar
+          schema:
+            $type: String
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateCart'
+      responses:
+        "200":
+          description: Se realizó la búsqueda satsfactoriamente. Si el Id es válido, modifica el carrito con la información del body.
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Cart'
+        "500":
+          description: Error creando el carrito en MongoDB
+    delete:
+      summary: Borra un determinado carrito, identificado por el Id
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a borrar
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Se realizó la búsqueda satsfactoriamente. Si el Id es válido, borra el carrito.
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Cart'
+        "500":
+          description: Error borrando el carrito de MongoDB
+  /api/carts/{cid}/products/{pid}:
+    post:
+      summary: Agrega una unidad del producto identificado con pid al carrito identificado con cid
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a modificar
+          schema:
+            $type: String
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a agregar
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Se realizó la búsqueda satsfactoriamente. Si los Ids son válidos, agrega el producto al carrito solicitado.
+        "500":
+          description: Error agregando el producto al carrito en MongoDB
+    put:
+      summary: Modifica la cantidad de un producto (pid) en un carrito (cid) con una cantidad ingresada por body
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a modificar
+          schema:
+            $type: String
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a modificar
+          schema:
+            $type: String
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/modifyQuantity' 
+      responses:
+        "200":
+          description: Se realizó la búsqueda satsfactoriamente. Si los Ids son válidos, modifica el producto en el carrito solicitado.
+        "500":
+          description: Error modificando el carrito en MongoDB
+    delete:
+      summary: Borra el producto identificado con pid del carrito identificado con cid
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a modificar
+          schema:
+            $type: String
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a borrar
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Se realizó la búsqueda satsfactoriamente. Si los Ids son válidos, borra el producto del carrito solicitado.
+        "500":
+          description: Error borrando el producto del carrito en MongoDB
+  /api/carts/{cid}/purchase:
+    post:
+      summary: Chequea todos los productos del carrito (cid) con el stock y los resta si son válidos. Crea un ticket con los productos validos
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a chequear
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Se realizó la búsqueda satsfactoriamente. Para cada producto, resta la cantidad si hay stock. Genera el ticket de la compra válida.
+        "500":
+          description: Error agregando el producto al carrito en MongoDB
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id autogenerado por Mongo
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                $ref: '#components/schemas/Product'
+              quantity:
+                type: Number
+                description: Amount of a given product added to cart
+      example:
+        _id: ObjectId("6443eef885987554c6f32072")
+        products: 
+          - product:
+              $ref: '#components/schemas/Product'
+            quantity: 2
+    Product:
+      type: object
+      properties:
+        _id: 
+          type: ObjectId
+          description: ID autogenerado por MONGO
+        title:
+          type: String
+          description: Título del producto
+        description:
+          type: String
+          description: Descripción del producto
+        price:
+          type: Number
+          description: Precio del producto
+        thumbnail:
+          type: String
+          description: URL de una imagen del producto
+        code:
+          type: String
+          description: Código único de identificación del producto
+        stock:
+          type: Number
+          description: Unidades del producto disponibles en stock
+        category:
+          type: String
+          description: Categoría a la que pertenece el producto
+        status:
+          type: Boolean
+          description: Si el producto está activo o inactivo para la venta
+        owner:
+          type: ObjectId
+          description: ID del usuario que cargó el producto
+      example:
+        _id: ObjectId("6443eef885993554c6f32072")
+        title: Gorra de Independiente
+        description: Gorra del club de futbol de Avellaneda
+        price: 2560
+        thumbnail: indepentente.com.ar/foto-gorra.jpg
+        code: wnecwecw7ex24
+        stock: 32
+        category: gorras
+        status: true
+        owner: ObjectId("6487b5689a818b1c7b89ef9a")
+  requestBodies:
+    updateCart:
+      type: array
+      items: 
+        type: object
+        properties:
+          product:
+            type: object
+            example: 
+              $ref: '#components/schemas/Product'
+          quantity:
+            type: Number
+            description: Cantidad del producto agregado en el carrito
+      example:
+        - product:
+            $ref: '#components/schemas/Product'
+          quantity: 12
+    modifyQuantity:
+      type: object
+      properties:
+        quantity:
+          type: Number
+      example:
+        quantity: 11
