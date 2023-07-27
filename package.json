@@ -5,14 +5,16 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "mocha": "^10.2.0",
+    "nodemon": "^3.0.1",
+    "supertest": "^6.3.3"
   },
   "dependencies": {
     "@faker-js/faker": "^7.6.0",

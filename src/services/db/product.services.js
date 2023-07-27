@@ -108,19 +108,15 @@ export default class ProductServiceDB {
             })
         }
 
-        
         try {
             const product = await productModel.findOne({ _id: id })
-
-            console.log(product.owner);
-            console.log(product.owner.equals(user._id));
             
             if (user.role !== 'admin' && product.owner && !product.owner.equals(user._id)) {
                 return { status: 'error', msg: 'No se puede modificar un producto que no le pertenece' }
             }
 
             const upd = await productModel.updateOne({ _id: id }, update)
-            console.log(upd);
+
             return { status: 'success', data: upd }
         } catch (error) {
             CustomError.createError({
