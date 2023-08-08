@@ -7,6 +7,7 @@ import config from "./config/config.js";
 import { faker } from "@faker-js/faker";
 import program from './process.js';
 import nodemailer from 'nodemailer';
+import multer from "multer";
 
 const PORT = program.opts().p
 
@@ -64,7 +65,7 @@ export const passportCall = (strategy) => {
             if (err) return next(err);
 
             if (!user) {
-                return res.status(401).send({ error: info.messages? info.messages : info.toString() })
+                return res.redirect('/users/login')
             }
 
             req.user = user;
@@ -176,5 +177,16 @@ export const sendResetEmail = async (email, link) => {
 
     return result
 }
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, __dirname + '/public/uploads')
+    },
+    filename: function(req, file, cb) {
+        cb(null, `${req.user.email}-${file.originalname}`)
+    }
+})
+
+export const uploader = multer({ storage: storage })
 
 export default __dirname;

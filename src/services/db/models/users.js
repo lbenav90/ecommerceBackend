@@ -12,7 +12,13 @@ const userSchema = new mongoose.Schema({
             ref: 'carts',
             required: true },
     role: { type: String, default: 'user', enum: ['user', 'admin', 'premium'] },
-    loggedBy: String
+    loggedBy: String,
+    documents: { type: [{
+                    name: { type: String, required: true},
+                    reference: { type: String, required: true }
+                }], 
+                default: []},
+    last_connection: { type: Date, required: true, default: new Date() }
 })
 
 userSchema.pre('find', function () {

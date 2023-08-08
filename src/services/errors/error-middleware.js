@@ -3,6 +3,7 @@ import EErrors from "./errors.js";
 
 const errorHandler = (error, req, res, next) => {
     logger.fatal(`Error detectado, entrando al error handler - código ${error.code}`)
+    console.log(error);
     switch (error.code) {
         case EErrors.MONGODB_ERROR:
         case EErrors.INCOMPLETE_PARAMETERS:

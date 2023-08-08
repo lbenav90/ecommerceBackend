@@ -8,7 +8,53 @@
     <a href="/products">Ver productos</a>
     <a href="/users/create">Crear producto</a>
     <a href="/cart">Ver carrito</a>
-    <form action="/api/users/premium/{{user._id}}" method="post">
+    {{#if profile}}
+        <img src="data:image/png;base64,{{profile}}" alt="profile-photo" width="150">
+    {{else}}
+        <form action="/api/users/{{user._id}}/documents" method="post" enctype="multipart/form-data">
+            <label for="upload">Foto de perfil:</label>
+            <input type="file" name="upload" id="profiles" accept="image/*">
+            <input type="hidden" name="type" value="profiles">
+            <input type="submit" value="Subir">
+        </form>
+    {{/if}}
+    <form action="/api/users/{{user._id}}/documents" method="post" enctype="multipart/form-data">
+        <label for="upload">Foto de producto:</label>
+        <input type="file" name="upload" id="products" accept="image/*">
+        <input type="hidden" name="type" value="products">
+        <input type="submit" value="Subir">
+    </form>
+    {{#if identification}}
+        <p>Identificación subida!</p>
+    {{else}}
+        <form action="/api/users/{{user._id}}/documents" method="post" enctype="multipart/form-data">
+            <label for="upload">Identificación:</label>
+            <input type="file" name="upload" id="identification" accept=".pdf">
+            <input type="hidden" name="type" value="identification">
+            <input type="submit" value="Subir">
+        </form>
+    {{/if}}
+    {{#if residence}}
+        <p>Comprobante de residencia subido!</p>
+    {{else}}
+        <form action="/api/users/{{user._id}}/documents" method="post" enctype="multipart/form-data">
+            <label for="upload">Comprobante de residencia:</label>
+            <input type="file" name="upload" id="residence" accept=".pdf">
+            <input type="hidden" name="type" value="residence">
+            <input type="submit" value="Subir">
+        </form>
+    {{/if}}
+    {{#if account_status}}
+        <p>Estado de cuenta subido!</p>
+    {{else}}
+        <form action="/api/users/{{user._id}}/documents" method="post" enctype="multipart/form-data">
+            <label for="upload">Comprobante de status de cuenta:</label>
+            <input type="file" name="upload" id="account-status" accept=".pdf">
+            <input type="hidden" name="type" value="account-status">
+            <input type="submit" value="Subir">
+        </form>
+    {{/if}}
+    <form action="/api/users/premium/{{user._id}}" method="post" id="role">
         <button>Cambiar rol</button>
     </form>
 </div>

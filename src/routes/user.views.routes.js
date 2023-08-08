@@ -6,13 +6,26 @@ import CustomError from "../services/errors/custom-error.js";
 import generateErrorMessage from "../services/errors/error-messages.js";
 import program from "../process.js";
 import bcrypt from 'bcrypt';
+import fs from 'fs';
 
 const PORT = program.opts().p
 
 const router = Router();
 
 router.get('/current', passportCall('jwt'), authorization(['user', 'admin', 'premium']), (req, res) => {
-    res.render('profile', { user: req.user })
+    
+    let imgData;
+    if (req.user.documents.filter(document => document.name === 'profiles')[0]?.reference) {
+        imgData = fs.readFileSync(req.user.documents.filter(document => document.name === 'profiles')[0]?.reference, {encoding: 'base64'});
+    }
+    
+    res.render('profile', { 
+        user: req.user,
+        profile: imgData || undefined,
+        identification: req.user.documents.filter(document => document.name === 'identification')[0]?.reference,
+        residence: req.user.documents.filter(document => document.name === 'residence')[0]?.reference,
+        account_status: req.user.documents.filter(document => document.name === 'account-status')[0]?.reference,
+     })
 })
 
 router.get('/login', (req, res) => {
@@ -121,7 +134,5 @@ router.get('/error', (req, res) => {
         error: error
     })
 })
-
-
 
 export default router;

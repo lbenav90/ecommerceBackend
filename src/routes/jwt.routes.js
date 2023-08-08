@@ -62,7 +62,10 @@ router.post('/login', async (req, res) => {
         email: user.email,
         age: user.age,
         cart: user.cart,
-        role: user.role
+        role: user.role,
+        loggedBy: user.loggedBy,
+        documents: user.documents,
+        last_connection: user.last_connection
     }
 
     const access_token = generateJWToken(tokenUser);
@@ -73,7 +76,9 @@ router.post('/login', async (req, res) => {
         maxAge: 600000,
         httpOnly: true
     })
-    
+
+    await uManager.updateLastConnection(email);
+
     res.status(201).send({ status: 'success', msg: 'Login exitoso' })
 })
 

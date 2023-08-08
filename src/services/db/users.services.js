@@ -98,7 +98,33 @@ export default class UserServiceDB {
             CustomError.createError({
                 name: "MongoDB Error",
                 cause: generateErrorMessage(EErrors.MONGODB_ERROR, { error: error }),
-                message: "Error creating user in MongoDB",
+                message: "Error changing user type in MongoDB",
+                code: EErrors.MONGODB_ERROR
+            })
+        }
+    }
+    updateLastConnection = async (email) => {
+        try {
+            const change = await userModel.updateOne({ email: email }, { last_connection: new Date() })
+            return { status: 'success', data: change }
+        } catch (error) {
+            CustomError.createError({
+                name: "MongoDB Error",
+                cause: generateErrorMessage(EErrors.MONGODB_ERROR, { error: error }),
+                message: "Error updating last connection in MongoDB",
+                code: EErrors.MONGODB_ERROR
+            })
+        }
+    }
+    updateDocuments = async (email, documents) => {
+        try {
+            const change = await userModel.updateOne({ email: email }, { documents: documents })
+            return { status: 'success', data: change }
+        } catch (error) {
+            CustomError.createError({
+                name: "MongoDB Error",
+                cause: generateErrorMessage(EErrors.MONGODB_ERROR, { error: error }),
+                message: "Error updating user documents in MongoDB",
                 code: EErrors.MONGODB_ERROR
             })
         }
