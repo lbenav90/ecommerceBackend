@@ -1,6 +1,5 @@
 import express from 'express';
 import __dirname from './utils.js';
-import config from './config/config.js';
 import session from 'express-session';
 import program from './process.js';
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -37,7 +36,7 @@ app.set('view engine', 'handlebars')
 
 import cookieParser from 'cookie-parser';
 // Cookies
-app.use(cookieParser(config.cookieSecret))
+app.use(cookieParser(process.env.COOKIE_SECRET))
 
 import passport from 'passport';
 import initializePassport from './config/passport.config.js';
@@ -46,7 +45,7 @@ import logger, { addLogger } from './config/logger.js';
 // Passport setup
 initializePassport();
 app.use(session({
-    secret: config.sessionSecret,
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true
 }))

@@ -6,7 +6,7 @@ const assignCommand = () => {
     program = new Command();
     
     program
-        .option('-p <port>', 'Puerto del server', 8080)
+        .option('-p <port>', 'Puerto del server', 8000)
         .option('--mode <mode>', 'Modo de trabajo', 'developer')
         .option('--system <system>', 'Sistema de persistencia', 'database')
     

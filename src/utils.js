@@ -3,7 +3,6 @@ import { dirname } from 'path';
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
 import passport from "passport";
-import config from "./config/config.js";
 import { faker } from "@faker-js/faker";
 import program from './process.js';
 import nodemailer from 'nodemailer';
@@ -53,7 +52,7 @@ export const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSy
 export const isValidPassword = (user, password) => bcrypt.compareSync(password, user.password);
 
 // JSON Web Token functions
-export const JWT_PRIVATE_KEY = config.JWTPrivateKey;
+export const JWT_PRIVATE_KEY = process.env.JWT_PRIVATE_KEY;
 
 export const generateJWToken = (user) => {
     return jwt.sign({ user }, JWT_PRIVATE_KEY, { expiresIn: '10m' })
@@ -154,7 +153,7 @@ export const sendResetEmail = async (email, link) => {
         port: 587,
         auth: { 
             user: 'lnbenavides90@gmail.com',
-            pass: config.gmailPass
+            pass: process.env.GMAIL_PASS
         }
     })
 
@@ -184,7 +183,7 @@ export const sendDeletedInactiveAccountEmail = async (email) => {
         port: 587,
         auth: { 
             user: 'lnbenavides90@gmail.com',
-            pass: config.gmailPass
+            pass: process.env.GMAIL_PASS
         }
     })
 
@@ -211,7 +210,7 @@ export const sendDeletedProduct = async (email, product) => {
         port: 587,
         auth: { 
             user: 'lnbenavides90@gmail.com',
-            pass: config.gmailPass
+            pass: process.env.GMAIL_PASS
         }
     })
 
