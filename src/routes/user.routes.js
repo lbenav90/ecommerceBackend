@@ -72,6 +72,7 @@ router.post('/premium/:uid', authUser, async (req, res) => {
 })
 
 router.post('/:uid/documents', authUser, async (req, res) => {
+    console.log(req.file, req.body);
     if (!req.file) {
         return res.redirect('/users/error?error="No file given"')
     }
