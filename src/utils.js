@@ -6,7 +6,7 @@ import passport from "passport";
 import { faker } from "@faker-js/faker";
 import program from './process.js';
 import nodemailer from 'nodemailer';
-import multer from "multer";
+import * as filestack from 'filestack-js'
 
 const PORT = program.opts().p || 8080
 
@@ -242,6 +242,6 @@ export const sendDeletedProduct = async (email, product) => {
 
 // export const uploader = multer({ storage: storage })
 
-export const uploader = require('filestack-js').init(process.env.FILESTACK_API_KEY)
+export const uploader = filestack.init(process.env.FILESTACK_API_KEY)
 
 export default __dirname;
