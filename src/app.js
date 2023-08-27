@@ -79,6 +79,6 @@ import errorHandler from './services/errors/error-middleware.js';
 // Error handling middleware
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
     logger.info(`Server live, listening on port ${PORT}`);
 })
