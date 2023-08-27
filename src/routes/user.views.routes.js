@@ -8,7 +8,7 @@ import program from "../process.js";
 import bcrypt from 'bcrypt';
 import fs from 'fs';
 
-const PORT = program.opts().p
+const PORT = program.opts().p || 8080
 
 const router = Router();
 

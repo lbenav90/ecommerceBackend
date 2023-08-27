@@ -4,7 +4,7 @@ import EErrors from "../errors/errors.js";
 import generateErrorMessage from "../errors/error-messages.js";
 import CustomError from "../errors/custom-error.js";
 
-const PORT = program.opts().p;
+const PORT = program.opts().p || 8080;
 
 export default class ProductServiceDB {
     static #instance;

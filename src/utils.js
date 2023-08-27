@@ -9,7 +9,7 @@ import program from './process.js';
 import nodemailer from 'nodemailer';
 import multer from "multer";
 
-const PORT = program.opts().p
+const PORT = program.opts().p || 8080
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

@@ -4,7 +4,7 @@ import program from '../src/process.js';
 import userModel from '../src/services/db/models/users.js';
 import supertest from 'supertest';
 
-const PORT = program.opts().p   
+const PORT = program.opts().p || 8080
 
 const assert = Assert.strict;
 const requester = supertest(`http://localhost:${PORT}`)

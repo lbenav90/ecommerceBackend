@@ -1,12 +1,12 @@
 import express from 'express';
-import __dirname from './src/utils.js';
-import config from './src/config/config.js';
+import __dirname from './utils.js';
+import config from './config/config.js';
 import session from 'express-session';
-import program from './src/process.js';
+import program from './process.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
 
-const PORT = program.opts().p
+const PORT = program.opts().p || 8080
 
 const app = express();
 
@@ -40,8 +40,8 @@ import cookieParser from 'cookie-parser';
 app.use(cookieParser(config.cookieSecret))
 
 import passport from 'passport';
-import initializePassport from './src/config/passport.config.js';
-import logger, { addLogger } from './src/config/logger.js';
+import initializePassport from './config/passport.config.js';
+import logger, { addLogger } from './config/logger.js';
 
 // Passport setup
 initializePassport();
@@ -57,12 +57,12 @@ app.use(addLogger);
 // Set the static file location
 app.use('/static', express.static(__dirname + '/public'))
 
-import viewsRouter from './src/routes/views.routes.js'
-import productRoutes from './src/routes/products.routes.js';
-import cartRoutes from './src/routes/cart.routes.js';
-import userViewsRouter from './src/routes/user.views.routes.js';  
-import jwtRouter from './src/routes/jwt.routes.js';
-import userRouter from './src/routes/user.routes.js'
+import viewsRouter from './routes/views.routes.js'
+import productRoutes from './routes/products.routes.js';
+import cartRoutes from './routes/cart.routes.js';
+import userViewsRouter from './routes/user.views.routes.js';  
+import jwtRouter from './routes/jwt.routes.js';
+import userRouter from './routes/user.routes.js'
 
 // Views Routers
 app.use('/', viewsRouter)
@@ -74,11 +74,11 @@ app.use('/api/carts', cartRoutes);
 app.use('/api/jwt', jwtRouter);
 app.use('/api/users', userRouter)
 
-import errorHandler from './src/services/errors/error-middleware.js';
+import errorHandler from './services/errors/error-middleware.js';
 
 // Error handling middleware
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-    logger.info(`Server live, listining on port ${PORT}`);
+    logger.info(`Server live, listening on port ${PORT}`);
 })
