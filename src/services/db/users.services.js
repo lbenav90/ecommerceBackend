@@ -1,3 +1,5 @@
+import { sendDeletedInactiveAccountEmail } from '../../utils.js';
+import UserDTO from '../dto/users.dto.js';
 import CustomError from '../errors/custom-error.js';
 import generateErrorMessage from '../errors/error-messages.js';
 import EErrors from '../errors/errors.js';
@@ -13,7 +15,22 @@ export default class UserServiceDB {
         }
         return this.#instance
     }
-
+    getAll = async () => {
+        try {
+            const users = await userModel.find();
+            return users.map(user => {
+                let u = new UserDTO(user);
+                return u.get();
+            })
+        } catch (error) {
+            CustomError.createError({
+                name: "MongoDB Error",
+                cause: generateErrorMessage(EErrors.MONGODB_ERROR),
+                message: "Error fetching users in MongoDB",
+                code: EErrors.MONGODB_ERROR
+            })
+        }
+    }
     getByEmail = async (email) => {
         if (!email) {
             CustomError.createError({
@@ -77,6 +94,19 @@ export default class UserServiceDB {
             })
         } 
     }
+    delete = async (id) => {
+        try {
+            const del = await userModel.findByIdAndDelete(id)
+            return del
+        } catch (error) {
+            CustomError.createError({
+                name: "MongoDB Error",
+                cause: generateErrorMessage(EErrors.MONGODB_ERROR, { error: error }),
+                message: "Error deleting user in MongoDB",
+                code: EErrors.MONGODB_ERROR
+            })
+        } 
+    } 
     resetPassword = async (email, password) => {
         try {
             await userModel.updateOne({ email: email }, { password: password })
@@ -128,5 +158,26 @@ export default class UserServiceDB {
                 code: EErrors.MONGODB_ERROR
             })
         }
+    }
+    deleteInactive = async (users) => {
+        users.forEach(async (user) => {
+            if (user.role === 'admin'){
+                return;
+            }
+
+            if ((new Date() - user.last_connection) / (1000*3600*24) > 2) {
+                try {
+                    await userModel.deleteOne({ email: user.email })
+                    sendDeletedInactiveAccountEmail(user.email)
+                } catch (error) {
+                    CustomError.createError({
+                        name: "MongoDB Error",
+                        cause: generateErrorMessage(EErrors.MONGODB_ERROR, { error: error }),
+                        message: "Error deleting user in MongoDB",
+                        code: EErrors.MONGODB_ERROR
+                    })
+                }
+            }
+        })
     }
 }

@@ -118,27 +118,28 @@ router.post('/:cid/purchase', authUser, async (req, res) => {
     }
 
     const products = await pManager.getProducts({ limit: 10000 });
-    let product, result;
     let amount = 0;
+    const valid = [];
     const invalid = [];
 
-    cart.data.products.forEach(async (item) => {
-        product = products.docs.filter(p => p._id.equals(item.product._id))[0]
+    for (let item of cart.data.products) {
+        let product = products.docs.filter(p => p._id.equals(item.product._id))[0]
 
         if (item.quantity <= product.stock) {
-            result = await pManager.updateProduct(product._id, { stock: product.stock - item.quantity })
+            await pManager.updateStock(product._id, product.stock - item.quantity)
             amount += product.price * item.quantity
+            valid.push(item)
         } else {
             invalid.push(item)
         }
-    })
+    }
 
-    const ticket = new TicketDTO({ code: createCode(), amount: amount, user: req.user })
+    const ticket = new TicketDTO({ code: createCode(), amount: amount, user: req.user, products: valid })
     
-    await tManager.create(await ticket.get())
+    const newTicket = await tManager.create(await ticket.get())
     await cManager.updateCart(cid, invalid)
 
-    res.status(200).send({ status: 'success', invalid: invalid.map(i => i.product._id) })
+    res.status(200).send({ status: 'success', invalid: invalid.map(i => i.product._id), ticket: newTicket.data.code})
 })
 
 export default router;

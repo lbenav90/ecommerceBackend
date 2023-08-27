@@ -1,0 +1,20 @@
+<div id="root">
+    <h1>Compra realizada con éxito!</h1>
+    <div>
+        <h3>Su compra tuvo un total de ${{amount}}</h3>
+        <br>
+        <a href="/products">Volver</a>
+        <h4>Productos comprados:</h4>
+        {{#each products}}
+                <li id="{{this._id}}">
+                    {{ this.product.title }}
+                    <ul class="product-info" id="{{this._id}}">
+                        <li class="product-data description" id="{{this._id}}-description">{{ this.product.description }}</li>
+                        <li class="product-data price" id="{{this._id}}-price">${{ this.product.price }}</li>
+                        <li class="product-data category" id="{{this._id}}-category">Category: {{ this.product.category }}</li>
+                    </ul>
+                </li>
+            <br>
+        {{/each}}
+    </div>
+</div>

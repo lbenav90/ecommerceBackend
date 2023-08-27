@@ -13,6 +13,19 @@ export default class TicketServiceDB {
         return this.#instance
     }
 
+    getById = async (code) => {
+        try {
+            const one = await ticketModel.find({ code: code })
+            return {status: 'success', data: one}
+        } catch (error) {
+            CustomError.createError({
+                name: "MongoDB Error",
+                cause: generateErrorMessage(EErrors.MONGODB_ERROR),
+                message: "Error adding ticket in MongoDB",
+                code: EErrors.MONGODB_ERROR
+            })
+        }
+    }
     create = async (ticket) => {
         if (!ticket || typeof(ticket) !== 'object') {
             CustomError.createError({

@@ -178,6 +178,60 @@ export const sendResetEmail = async (email, link) => {
     return result
 }
 
+export const sendDeletedInactiveAccountEmail = async (email) => {
+    const transport = nodemailer.createTransport({
+        service: 'gmail',
+        port: 587,
+        auth: { 
+            user: 'lnbenavides90@gmail.com',
+            pass: config.gmailPass
+        }
+    })
+
+    const result = await transport.sendMail({
+        from: 'Ecommerce',
+        to: email,
+        subject: 'Cuenta eliminada por inactividad',
+        html: `
+        <h1>Cuenta en Ecommerce eliminada</h1>
+
+        <div>
+            <p>Su cuenta ha sido eliminada ya que no se registró actividad por al menos 2 días</p>
+        </div>
+        `,
+        attachments: []
+    })
+
+    return result
+}
+
+export const sendDeletedProduct = async (email, product) => {
+    const transport = nodemailer.createTransport({
+        service: 'gmail',
+        port: 587,
+        auth: { 
+            user: 'lnbenavides90@gmail.com',
+            pass: config.gmailPass
+        }
+    })
+
+    const result = await transport.sendMail({
+        from: 'Ecommerce',
+        to: email,
+        subject: 'Producto borrado',
+        html: `
+        <h1>Un producto se cargó fue eliminado</h1>
+
+        <div>
+            <p>Se eliminó un producto que le pertenece, con nombre ${product.title}</p>
+        </div>
+        `,
+        attachments: []
+    })
+
+    return result
+}
+
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, __dirname + '/public/uploads')

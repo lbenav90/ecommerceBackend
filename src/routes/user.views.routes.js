@@ -21,6 +21,7 @@ router.get('/current', passportCall('jwt'), authorization(['user', 'admin', 'pre
     
     res.render('profile', { 
         user: req.user,
+        admin: req.user.role === 'admin',
         profile: imgData || undefined,
         identification: req.user.documents.filter(document => document.name === 'identification')[0]?.reference,
         residence: req.user.documents.filter(document => document.name === 'residence')[0]?.reference,

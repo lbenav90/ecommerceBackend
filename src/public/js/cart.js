@@ -38,6 +38,6 @@ document.querySelector('.purchase-button').onclick = async (event) => {
     }
 
     setTimeout(() => {
-        location.reload()
+        location.replace(`/purchase?code=${response.ticket}`)
     }, 1500)
 }

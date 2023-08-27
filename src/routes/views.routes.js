@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { authUser, loadUser, mockProducts } from "../utils.js";
-import { cManager, pManager } from "../services/factory.js";
+import { authUser, authorization, loadUser, mockProducts } from "../utils.js";
+import { cManager, pManager, tManager, uManager } from "../services/factory.js";
 import logger from "../config/logger.js";
 
 const router = Router();
@@ -76,6 +76,24 @@ router.get('/cart', authUser, async (req, res) => {
 
 router.get('/',  (req, res) => {
     res.render('index', {})
+})
+
+router.get('/purchase', async (req, res) => {
+    const ticketCode = req.query.code;
+    const ticket = await tManager.getById(ticketCode)
+    console.log(ticket.data[0].products);
+
+    res.render('purchase', {
+        amount: ticket.data[0].amount,
+        products: ticket.data[0].products
+    })
+})
+
+router.get('/admin', authUser, authorization(['admin']), async (req, res) => {
+    const users = await uManager.getAll();
+    res.render('admin', {
+        users: users.map(user => { return { ...user, admin: user.role === 'admin' }})
+    })
 })
 
 router.get('/private', authUser, (req, res) => {

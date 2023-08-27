@@ -1,0 +1,40 @@
+<div id="root">
+    <h1>Bienvenido Administrador!</h1>
+    <br>
+    <a href="/users/current">Perfil</a>
+    <button id="delete-inactive-accounts">Eliminar cuentas inactivas</button>
+    <table > 
+        <thead>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Última conexión</th>
+            <th></th>
+            <th></th>
+        </thead>
+        <tbody>
+            {{#each users}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{email}}</td>
+                    <td id="{{id}}-role" data-role="{{role}}">
+                        {{role}}
+                        {{#unless admin}}
+                            <button class="{{id}} change-role-button" style=>Cambiar</button>
+                        {{/unless}}
+                    </td>
+                    <td>{{last_connection}}</td>
+                    <td>
+                        {{#unless admin}}
+                            <button class="{{id}} delete-button">Borrar</button>
+                        {{/unless}}
+                    </td>
+                    <td class="{{email}} alerts" style="color:red"></td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script type="text/javascript" src="/static/js/admin.js"></script>

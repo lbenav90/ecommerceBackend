@@ -127,6 +127,20 @@ export default class ProductServiceDB {
             })
         }
     }
+    updateStock = async (id, newStock) => {
+        try {
+            const upd = await productModel.updateOne({ _id: id }, { stock: newStock })
+
+            return { status: 'success', data: upd }
+        } catch (error) {
+            CustomError.createError({
+                name: "MongoDB Error",
+                cause: generateErrorMessage(EErrors.MONGODB_ERROR, { error: error }),
+                message: "Error updating product in MongoDB",
+                code: EErrors.MONGODB_ERROR
+            })
+        }
+    }
     deleteProduct = async (id, user) => {
         if (!id) {
             CustomError.createError({

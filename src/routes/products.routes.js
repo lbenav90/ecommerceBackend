@@ -54,8 +54,9 @@ router.delete('/:pid', authUser, authorization(['premium', 'admin']), async (req
             await cManager.updateCart(cart._id, cart.products.filter(p => !p._id.equals(id)))
         }
     })
-    
+    const product = await pManager.getProductById(id);
     const deleted = await pManager.deleteProduct(id, req.user);
+    sendDeletedProduct(req.user.email, product)
 
     res.status(200).send(deleted)
 });

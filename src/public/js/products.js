@@ -20,7 +20,7 @@ const deleteProduct = async (event) => {
 
     let result = await axios.delete(`http://localhost:8080/api/products/${productCode}`)
     let response = await result.data
-
+    
     Toastify({
         text: (response.status === 'success')? 'Producto borrado' : response.msg,
         duration: 3000

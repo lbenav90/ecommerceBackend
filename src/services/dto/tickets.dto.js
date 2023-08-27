@@ -5,6 +5,7 @@ export default class TicketDTO {
         this.code = ticket.code
         this.amount = ticket.amount
         this.purchaser = ticket.user
+        this.products = ticket.products
     }
 
     get = async () => {
@@ -12,7 +13,8 @@ export default class TicketDTO {
         return {
             code: this.code,
             amount: this.amount,
-            purchaser: user._id
+            purchaser: user._id,
+            products: this.products
         }
     }
 }

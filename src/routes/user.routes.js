@@ -1,10 +1,40 @@
 import { Router } from "express";
-import __dirname, { authUser, generateJWToken, uploader } from "../utils.js";
+import __dirname, { authUser, authorization, generateJWToken, uploader } from "../utils.js";
 import { uManager } from "../services/factory.js";
 import logger from "../config/logger.js";
 import fs from 'fs-extra';
 
 const router = Router();
+
+router.get('/', async (req, res) => {
+    const users = await uManager.getAll();
+
+    res.status(200).send({ status: 'success', data: users })
+})
+
+router.delete('/', async (req, res) => {
+    const users = await uManager.getAll();
+
+    await uManager.deleteInactive(users);
+    
+    res.status(200).send({ status: 'success' })
+})
+
+router.delete('/:uid', authUser, authorization(['admin']), async (req, res) => {
+    const uid = req.params.uid
+    const del = await uManager.delete(uid)
+
+    res.status(200).send({ status: 'success', data: del })
+})
+
+router.post('/:uid', authUser, authorization(['admin']), async (req, res) => {
+    const uid = req.params.uid
+    const currentRole = req.query.role
+
+    const changed = uManager.changeUserType(uid, currentRole)
+
+    res.status(200).send({ status: 'success', data: changed })
+})
 
 router.post('/premium/:uid', authUser, async (req, res) => {
     const identification = req.user.documents.filter(document => document.name === 'identification')[0] || undefined;
