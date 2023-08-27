@@ -231,15 +231,17 @@ export const sendDeletedProduct = async (email, product) => {
     return result
 }
 
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, __dirname + '/public/uploads')
-    },
-    filename: function(req, file, cb) {
-        cb(null, `${req.user.email}-${file.originalname}`)
-    }
-})
+// const storage = multer.diskStorage({
+//     destination: function(req, file, cb) {
+//         cb(null, __dirname + '/public/uploads')
+//     },
+//     filename: function(req, file, cb) {
+//         cb(null, `${req.user.email}-${file.originalname}`)
+//     }
+// })
 
-export const uploader = multer({ storage: storage })
+// export const uploader = multer({ storage: storage })
+
+export const uploader = require('filestack-js').init(process.env.FILESTACK_API_KEY)
 
 export default __dirname;

@@ -14,15 +14,15 @@ const router = Router();
 
 router.get('/current', passportCall('jwt'), authorization(['user', 'admin', 'premium']), (req, res) => {
     
-    let imgData;
-    if (req.user.documents.filter(document => document.name === 'profiles')[0]?.reference) {
-        imgData = fs.readFileSync(req.user.documents.filter(document => document.name === 'profiles')[0]?.reference, {encoding: 'base64'});
-    }
+    // let imgData;
+    // if (req.user.documents.filter(document => document.name === 'profiles')[0]?.reference) {
+    //     imgData = fs.readFileSync(req.user.documents.filter(document => document.name === 'profiles')[0]?.reference, {encoding: 'base64'});
+    // }
     
     res.render('profile', { 
         user: req.user,
         admin: req.user.role === 'admin',
-        profile: imgData || undefined,
+        profile: req.user.documents.filter(document => document.name === 'profiles')[0]?.reference,
         identification: req.user.documents.filter(document => document.name === 'identification')[0]?.reference,
         residence: req.user.documents.filter(document => document.name === 'residence')[0]?.reference,
         account_status: req.user.documents.filter(document => document.name === 'account-status')[0]?.reference,

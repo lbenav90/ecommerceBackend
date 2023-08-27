@@ -71,33 +71,14 @@ router.post('/premium/:uid', authUser, async (req, res) => {
     res.redirect('/users/current')
 })
 
-router.post('/:uid/documents', authUser, uploader.single('upload'), async (req, res) => {
+router.post('/:uid/documents', authUser, async (req, res) => {
     if (!req.file) {
         return res.redirect('/users/error?error="No file given"')
     }
 
-    let folder;
+    const result = await uploader.upload(req.file)
 
-    switch (req.body.type) {
-        case 'profiles':
-            folder = 'uploads\\profiles';
-            break;
-        case 'products':
-            folder = 'uploads\\products';
-            break;
-        case 'identification':
-        case 'residence':
-        case 'account-status':
-            folder = 'uploads\\documents';
-            break;
-    }
-    
-    const oldDir = `${__dirname}\\public\\uploads\\${req.file.filename}`
-    const newDir = `${__dirname}\\public\\${folder}\\${req.body.type}-${req.file.filename}`
-
-    fs.move(oldDir, newDir,(err) => {})
-
-    req.user.documents.push({ name: req.body.type, reference: newDir })
+    req.user.documents.push({ name: req.body.type, reference: result.url })
 
     const access_token = generateJWToken(req.user);
     logger.info(`JWT token generated for user: ${req.user}`);
