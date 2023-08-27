@@ -7,6 +7,7 @@ import { faker } from "@faker-js/faker";
 import program from './process.js';
 import nodemailer from 'nodemailer';
 import * as filestack from 'filestack-js'
+import multer from "multer";
 
 const PORT = program.opts().p || 8080
 
