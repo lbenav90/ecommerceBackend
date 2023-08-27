@@ -2,7 +2,7 @@ const deleteFromCart = async (event) => {
     const productCode = event.target.id.split('-')[0]
     const cartCode = document.querySelector('#cartId').value
 
-    let result = await axios.delete(`http://localhost:8080/api/carts/${cartCode}/products/${productCode}`)
+    let result = await axios.delete(`https://ecommercebackend-production-29cb.up.railway.app/api/carts/${cartCode}/products/${productCode}`)
     let response = await result.data
 
     Toastify({
@@ -22,7 +22,7 @@ document.querySelectorAll('.product-data button').forEach(button => {
 document.querySelector('.purchase-button').onclick = async (event) => {
     const cid = event.target.id
     
-    let result = await axios.post(`http://localhost:8080/api/carts/${cid}/purchase`)
+    let result = await axios.post(`https://ecommercebackend-production-29cb.up.railway.app/api/carts/${cid}/purchase`)
     let response = await result.data
 
     if (response.status === 'error') {

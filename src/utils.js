@@ -141,8 +141,8 @@ export const mockProducts = (number, page = 1) => {
     const products = {
         status: 'success',
         docs: mocked.slice(10 * (realPage - 1), 10 * realPage),
-        prevLink: page === 1? null : `http://localhost:${PORT}/mockingproducts?page=${realPage - 1}`,
-        nextLink: page === Math.floor(mocked.length / 10)? null : `http://localhost:${PORT}/mockingproducts?page=${realPage + 1}`
+        prevLink: page === 1? null : `https://ecommercebackend-production-29cb.up.railway.app/mockingproducts?page=${realPage - 1}`,
+        nextLink: page === Math.floor(mocked.length / 10)? null : `https://ecommercebackend-production-29cb.up.railway.app/mockingproducts?page=${realPage + 1}`
     }
     
     return products;

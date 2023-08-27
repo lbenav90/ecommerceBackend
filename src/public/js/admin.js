@@ -4,7 +4,7 @@ deleteButtons.forEach(button => {
     button.onclick = async () => {
         const id = button.classList[0];
         
-        let result = await axios.delete(`http://localhost:8080/api/users/${id}`)
+        let result = await axios.delete(`https://ecommercebackend-production-29cb.up.railway.app/api/users/${id}`)
         let response = await result.data
 
         Toastify({
@@ -25,7 +25,7 @@ changeButtons.forEach(button => {
         const id = button.classList[0];
         const role = document.getElementById(`${id}-role`).dataset.role;
 
-        let result = await axios.post(`http://localhost:8080/api/users/${id}?role=${role}`)
+        let result = await axios.post(`https://ecommercebackend-production-29cb.up.railway.app/api/users/${id}?role=${role}`)
         let response = await result.data
 
         Toastify({
@@ -40,7 +40,7 @@ changeButtons.forEach(button => {
 })
 
 document.querySelector('#delete-inactive-accounts').onclick = async () => {
-        let result = await axios.delete(`http://localhost:8080/api/users/`)
+        let result = await axios.delete(`https://ecommercebackend-production-29cb.up.railway.app/api/users/`)
         let response = await result.data
 
         Toastify({

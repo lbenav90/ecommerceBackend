@@ -6,7 +6,7 @@ const addToCart = async (event) => {
         location.replace('/users/login')
     }
 
-    let result = await axios.post(`http://localhost:8080/api/carts/${cart.value}/products/${productCode}`)
+    let result = await axios.post(`https://ecommercebackend-production-29cb.up.railway.app/api/carts/${cart.value}/products/${productCode}`)
     let response = await result.data
 
     Toastify({
@@ -18,7 +18,7 @@ const addToCart = async (event) => {
 const deleteProduct = async (event) => {
     const productCode = event.target.id.split('-')[0]
 
-    let result = await axios.delete(`http://localhost:8080/api/products/${productCode}`)
+    let result = await axios.delete(`https://ecommercebackend-production-29cb.up.railway.app/api/products/${productCode}`)
     let response = await result.data
     
     Toastify({

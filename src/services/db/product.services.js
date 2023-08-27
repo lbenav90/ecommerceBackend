@@ -38,8 +38,8 @@ export default class ProductServiceDB {
                         page: page || 1
                     })
             
-            let prevLink = `http://localhost:${PORT}/products?page=${products.prevPage}${sort? `&sort=${sort}` : ''}${limit? `&limit=${limit}` : ''}${query? `&query=${query}` : ''}`
-            let nextLink = `http://localhost:${PORT}/products?page=${products.nextPage}${sort? `&sort=${sort}` : ''}${limit? `&limit=${limit}` : ''}${query? `&query=${query}` : ''}`
+            let prevLink = `https://ecommercebackend-production-29cb.up.railway.app/products?page=${products.prevPage}${sort? `&sort=${sort}` : ''}${limit? `&limit=${limit}` : ''}${query? `&query=${query}` : ''}`
+            let nextLink = `https://ecommercebackend-production-29cb.up.railway.app/products?page=${products.nextPage}${sort? `&sort=${sort}` : ''}${limit? `&limit=${limit}` : ''}${query? `&query=${query}` : ''}`
 
             return { status: 'success', 
                     ...products, 

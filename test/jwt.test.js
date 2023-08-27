@@ -7,7 +7,7 @@ import supertest from 'supertest';
 const PORT = program.opts().p || 8080
 
 const assert = Assert.strict;
-const requester = supertest(`http://localhost:${PORT}`)
+const requester = supertest(`https://ecommercebackend-production-29cb.up.railway.app/`)
 
 describe('Testing Auth Services', () => {
     before(function () {

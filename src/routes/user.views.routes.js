@@ -65,7 +65,7 @@ router.post('/recovery', async (req, res) => {
     const newToken = await tkManager.create(req.body.email)
     const resetToken = newToken.data.token
 
-    const link = `localhost:${PORT}/users/passwordReset?token=${resetToken}&email=${req.body.email}`;
+    const link = `https://ecommercebackend-production-29cb.up.railway.app/users/passwordReset?token=${resetToken}&email=${req.body.email}`;
     sendResetEmail(req.body.email, link)
 
     res.render('recovery', {

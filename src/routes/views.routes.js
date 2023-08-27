@@ -75,7 +75,7 @@ router.get('/cart', authUser, async (req, res) => {
 })
 
 router.get('/',  (req, res) => {
-    res.render('index', {})
+    res.redirect('/products')
 })
 
 router.get('/purchase', async (req, res) => {
