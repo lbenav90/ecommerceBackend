@@ -13,7 +13,8 @@
     {{/if}}
     {{#unless admin}}
         {{#if profile}}
-            <img src="data:image/png;base64,{{profile}}" alt="profile-photo" width="150">
+            {{!-- <img src="data:image/png;base64,{{profile}}" alt="profile-photo" width="150"> --}}
+            <p>Foto de perfil subida!</p>
         {{else}}
             <form action="/api/users/{{user._id}}/documents" method="post" enctype="multipart/form-data">
                 <label for="upload">Foto de perfil:</label>

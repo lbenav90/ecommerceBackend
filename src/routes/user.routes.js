@@ -1,8 +1,7 @@
 import { Router } from "express";
-import __dirname, { authUser, authorization, filestackUploader, generateJWToken, uploader } from "../utils.js";
+import __dirname, { authUser, authorization, generateJWToken, uploader } from "../utils.js";
 import { uManager } from "../services/factory.js";
 import logger from "../config/logger.js";
-import fs from 'fs-extra';
 
 const router = Router();
 
@@ -76,9 +75,7 @@ router.post('/:uid/documents', authUser, uploader.single('upload'), async (req, 
         return res.redirect('/users/error?error="No file given"')
     }
 
-    const result = await filestackUploader.upload(req.file)
-
-    req.user.documents.push({ name: req.body.type, reference: result.url })
+    req.user.documents.push({ name: req.body.type, reference: 'somthing' })
 
     const access_token = generateJWToken(req.user);
     logger.info(`JWT token generated for user: ${req.user}`);

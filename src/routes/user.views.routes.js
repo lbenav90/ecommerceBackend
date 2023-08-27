@@ -6,7 +6,6 @@ import CustomError from "../services/errors/custom-error.js";
 import generateErrorMessage from "../services/errors/error-messages.js";
 import program from "../process.js";
 import bcrypt from 'bcrypt';
-import fs from 'fs';
 
 const PORT = program.opts().p || 8080
 
